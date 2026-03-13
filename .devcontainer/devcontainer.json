@@ -1,0 +1,43 @@
+{
+  "name": "JDesk Workspace",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.wordWrap": "on",
+        "css.validate": true,
+        "html.format.enable": true,
+        "liveServer.settings.donotShowInfoMsg": true,
+        "liveServer.settings.port": 5500,
+        "emmet.includeLanguages": {
+          "html": "html"
+        }
+      },
+      "extensions": [
+        "ritwickdey.LiveServer",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ecmel.vscode-html-css",
+        "zignd.html-css-class-completion",
+        "stylelint.vscode-stylelint",
+        "formulahendry.auto-rename-tag",
+        "formulahendry.auto-close-tag",
+        "naumovs.color-highlight",
+        "pkief.material-icon-theme",
+        "zhuangtongfa.material-theme",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "cloudflare.cloudflare-workers-bindings",
+        "ms-azuretools.vscode-docker",
+        "humao.rest-client"
+      ]
+    }
+  },
+  "forwardPorts": [5500, 8787],
+  "postCreateCommand": "npm install -g wrangler && echo '✅ JDesk Workspace dev environment ready!'",
+  "remoteUser": "node"
+}

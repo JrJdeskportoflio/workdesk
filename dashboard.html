@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JDesk — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script src="assets/js/dashboard.js" defer></script>
+  <style>
+    /* Inline chart placeholder bars */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 160px;
+      padding: 0 4px;
+    }
+
+    .bar-chart .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bar-chart .bar {
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+      background: var(--primary-soft);
+      transition: background 0.2s;
+    }
+
+    .bar-chart .bar:hover {
+      background: var(--primary);
+    }
+
+    .bar-chart .bar.accent {
+      background: var(--accent-soft);
+    }
+
+    .bar-chart .bar.accent:hover {
+      background: var(--accent);
+    }
+
+    .bar-chart .bar-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Donut chart placeholder */
+    .donut-chart {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--primary) 0deg 180deg,
+        var(--accent) 180deg 270deg,
+        var(--danger) 270deg 330deg,
+        var(--border-light) 330deg 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-inner {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Activity timeline */
+    .timeline-item {
+      display: flex;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-content strong {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .timeline-content span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Quick actions */
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .quick-action:hover {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .quick-action .qa-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-soft);
+    }
+
+    /* User greeting */
+    .greeting-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+
+    .greeting-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .greeting-card p {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .greeting-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img
+          src="https://res.cloudinary.com/durqetaph/image/upload/v1773377613/Jdesk_Logo.svg"
+          alt="JDesk Logo"
+        />
+        JDesk
+      </div>
+
+      <!-- Main Menu -->
+      <span class="sidebar-section-label">Main</span>
+      <ul class="sidebar-menu" role="list">
+        <li class="active" role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          Dashboard
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          Employees
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Attendance
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Leave Management
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Payroll
+        </li>
+      </ul>
+
+      <!-- Support Menu -->
+      <span class="sidebar-section-label">Support</span>
+      <ul class="sidebar-menu" role="list">
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+          </svg>
+          Ticketing
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Reports &amp; Analytics
+        </li>
+        <li role="listitem">
+          <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          Settings
+        </li>
+      </ul>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="flex-center gap-8 mt-8">
+          <div class="employee-avatar" style="width:34px;height:34px;font-size:13px;">JD</div>
+          <div>
+            <div class="font-semibold text-sm">J. Dela Cruz</div>
+            <div class="text-xs text-muted">HR Administrator</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper">
+
+      <!-- ===== TOPBAR ===== -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h2>Dashboard</h2>
+          <input
+            class="search-box"
+            type="search"
+            placeholder="Search employees, tickets…"
+            aria-label="Search"
+          />
+        </div>
+        <div class="topbar-actions">
+
+          <!-- Notifications -->
+          <button class="topbar-icon-btn badge" aria-label="Notifications">
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </button>
+
+          <!-- Profile -->
+          <div class="employee-avatar" style="width:38px;height:38px;font-size:15px;cursor:pointer;" title="J. Dela Cruz">
+            JD
+          </div>
+        </div>
+      </header>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main-content" id="mainContent">
+
+        <!-- Greeting Banner -->
+        <div class="greeting-card">
+          <div>
+            <h2 id="greetingText">Good Morning, J. Dela Cruz! 👋</h2>
+            <p>Here's what's happening in your workspace today.</p>
+          </div>
+          <div class="greeting-avatar">JD</div>
+        </div>
+
+        <!-- ── STAT CARDS ── -->
+        <div class="grid-4 mb-20">
+
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">248</div>
+              <div class="stat-label">Total Employees</div>
+              <div class="stat-change up">↑ 3 this month</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon yellow">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">212</div>
+              <div class="stat-label">Present Today</div>
+              <div class="stat-change up">85.5% attendance</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon red">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">18</div>
+              <div class="stat-label">On Leave</div>
+              <div class="stat-change down">+2 from yesterday</div>
+
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">7</div>
+              <div class="stat-label">Open Tickets</div>
+              <div class="stat-change up">↓ 2 resolved today</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── ROW 2: Charts + Attendance ── -->
+        <div class="grid mb-20">
+
+          <!-- Bar Chart — Monthly Attendance -->
+          <div class="card col-span-2">
+            <div class="card-header">
+              <span class="card-title">Monthly Attendance Overview</span>
+              <span class="card-action">View Report →</span>
+            </div>
+            <div class="bar-chart" aria-label="Monthly attendance bar chart">
+              <div class="bar-group"><div class="bar" style="height:90px"></div><div class="bar-label">Jan</div></div>
+              <div class="bar-group"><div class="bar" style="height:120px"></div><div class="bar-label">Feb</div></div>
+              <div class="bar-group"><div class="bar accent" style="height:75px"></div><div class="bar-label">Mar</div></div>
+              <div class="bar-group"><div class="bar" style="height:140px"></div><div class="bar-label">Apr</div></div>
+              <div class="bar-group"><div class="bar" style="height:100px"></div><div class="bar-label">May</div></div>
+              <div class="bar-group"><div class="bar accent" style="height:85px"></div><div class="bar-label">Jun</div></div>
+              <div class="bar-group"><div class="bar" style="height:130px"></div><div class="bar-label">Jul</div></div>
+              <div class="bar-group"><div class="bar" style="height:110px"></div><div class="bar-label">Aug</div></div>
+              <div class="bar-group"><div class="bar accent" style="height:95px"></div><div class="bar-label">Sep</div></div>
+              <div class="bar-group"><div class="bar" style="height:150px"></div><div class="bar-label">Oct</div></div>
+              <div class="bar-group"><div class="bar" style="height:125px"></div><div class="bar-label">Nov</div></div>
+              <div class="bar-group"><div class="bar" style="height:145px"></div><div class="bar-label">Dec</div></div>
+            </div>
+          </div>
+
+          <!-- Attendance Summary -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Today's Summary</span>
+              <span class="card-action">Details</span>
+            </div>
+
+            <div class="flex-center gap-12 mb-16" style="justify-content:center;">
+              <div class="donut-chart" role="img" aria-label="Attendance donut chart: 85% present">
+                <div class="donut-inner">85%</div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="flex-between text-sm">
+                <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--primary)"></div> Present</div>
+                <span class="attendance-present">212</span>
+              </div>
+              <div class="attendance-bar"><div class="attendance-bar-fill" style="width:85%;background:var(--primary)"></div></div>
+
+              <div class="flex-between text-sm mt-8">
+                <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--warning)"></div> Late</div>
+                <span class="attendance-late">14</span>
+              </div>
+              <div class="attendance-bar"><div class="attendance-bar-fill" style="width:6%;background:var(--warning)"></div></div>
+
+              <div class="flex-between text-sm mt-8">
+                <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--danger)"></div> Absent</div>
+                <span class="attendance-absent">22</span>
+              </div>
+              <div class="attendance-bar"><div class="attendance-bar-fill" style="width:9%;background:var(--danger)"></div></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── ROW 3: Employees + Tickets + Activity ── -->
+        <div class="grid mb-20">
+
+          <!-- Recent Employees -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">New Employees</span>
+              <span class="card-action">View All →</span>
+            </div>
+
+            <div class="employee-card">
+              <div class="employee-avatar">MA</div>
+              <div class="employee-info">
+                <h4>Maria A. Santos</h4>
+                <span>HR Specialist · Feb 2025</span>
+              </div>
+              <span class="tag tag-green">Active</span>
+            </div>
+            <div class="employee-card">
+              <div class="employee-avatar">JR</div>
+              <div class="employee-info">
+                <h4>Jose R. Reyes</h4>
+                <span>Software Engineer · Jan 2025</span>
+              </div>
+              <span class="tag tag-green">Active</span>
+            </div>
+            <div class="employee-card">
+              <div class="employee-avatar">LC</div>
+              <div class="employee-info">
+                <h4>Liza C. Cruz</h4>
+                <span>Accountant · Jan 2025</span>
+              </div>
+              <span class="tag tag-yellow">Probation</span>
+            </div>
+            <div class="employee-card">
+              <div class="employee-avatar">BP</div>
+              <div class="employee-info">
+                <h4>Ben P. Mendoza</h4>
+                <span>Operations Lead · Dec 2024</span>
+              </div>
+              <span class="tag tag-green">Active</span>
+            </div>
+          </div>
+
+          <!-- Open Tickets -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Support Tickets</span>
+              <span class="card-action">Manage →</span>
+            </div>
+
+            <div class="ticket-item">
+              <div>
+                <div class="ticket-title">Payslip not generated — March</div>
+                <div class="ticket-meta">Maria Santos · 2 hrs ago</div>
+              </div>
+              <span class="ticket-status status-open">Open</span>
+            </div>
+            <div class="ticket-item">
+              <div>
+                <div class="ticket-title">Leave balance discrepancy</div>
+                <div class="ticket-meta">Jose Reyes · 5 hrs ago</div>
+              </div>
+              <span class="ticket-status status-pending">Pending</span>
+            </div>
+            <div class="ticket-item">
+              <div>
+                <div class="ticket-title">SSS/PhilHealth update request</div>
+                <div class="ticket-meta">Liza Cruz · Yesterday</div>
+              </div>
+              <span class="ticket-status status-resolved">Resolved</span>
+            </div>
+            <div class="ticket-item">
+              <div>
+                <div class="ticket-title">Overtime approval — Q1</div>
+                <div class="ticket-meta">Ben Mendoza · 2 days ago</div>
+              </div>
+              <span class="ticket-status status-open">Open</span>
+            </div>
+          </div>
+
+          <!-- Activity Feed -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Activity</span>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:var(--primary-soft)">📋</div>
+              <div class="timeline-content">
+                <strong>Leave approved — Maria Santos</strong>
+                <span>VL · Mar 12–14, 2025</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:var(--accent-soft)">💰</div>
+              <div class="timeline-content">
+                <strong>Payroll processed — Feb 2025</strong>
+                <span>248 employees · ₱2.4M total</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:#EBF4FF">👤</div>
+              <div class="timeline-content">
+                <strong>New hire onboarded</strong>
+                <span>Maria A. Santos · HR Specialist</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:#FDECEA">⚠️</div>
+              <div class="timeline-content">
+                <strong>Ticket escalated</strong>
+                <span>Payslip issue → Finance Team</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── ROW 4: Notices + Quick Actions + Calendar ── -->
+        <div class="grid">
+
+          <!-- Announcements -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Announcements</span>
+              <button class="btn btn-soft btn-sm">+ Post</button>
+            </div>
+
+            <div class="notice">
+              <div class="notice-title">🎉 Company Anniversary — March 20</div>
+              Celebrate 10 years with a company-wide event. Details to follow.
+            </div>
+            <div class="notice info">
+              <div class="notice-title">📢 Open Enrollment — Health Benefits</div>
+              Submit your HMO update forms before March 31.
+            </div>
+            <div class="notice">
+              <div class="notice-title">📅 Q1 Performance Reviews</div>
+              Schedule your 1-on-1 review sessions this week.
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Quick Actions</span>
+            </div>
+            <div class="grid-4" style="gap:12px;">
+              <div class="quick-action">
+                <div class="qa-icon">📋</div>
+                File Leave
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">🎫</div>
+                New Ticket
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">👤</div>
+                Add Employee
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">💰</div>
+                Run Payroll
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">📊</div>
+                View Reports
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">⚙️</div>
+                Settings
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">📩</div>
+                Broadcast
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon">🔔</div>
+                Alerts
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">March 2025</span>
+              <div class="flex-center gap-8">
+                <button class="topbar-icon-btn" aria-label="Previous month">&#8249;</button>
+                <button class="topbar-icon-btn" aria-label="Next month">&#8250;</button>
+              </div>
+            </div>
+            <div class="calendar-grid">
+              <div class="calendar-day-label">Su</div>
+              <div class="calendar-day-label">Mo</div>
+              <div class="calendar-day-label">Tu</div>
+              <div class="calendar-day-label">We</div>
+              <div class="calendar-day-label">Th</div>
+              <div class="calendar-day-label">Fr</div>
+              <div class="calendar-day-label">Sa</div>
+
+              <!-- Week 1 -->
+              <div class="calendar-day text-muted">23</div>
+              <div class="calendar-day text-muted">24</div>
+              <div class="calendar-day text-muted">25</div>
+              <div class="calendar-day text-muted">26</div>
+              <div class="calendar-day text-muted">27</div>
+              <div class="calendar-day text-muted">28</div>
+              <div class="calendar-day">1</div>
+              <!-- Week 2 -->
+              <div class="calendar-day">2</div>
+              <div class="calendar-day">3</div>
+              <div class="calendar-day">4</div>
+              <div class="calendar-day">5</div>
+              <div class="calendar-day has-event">6</div>
+              <div class="calendar-day">7</div>
+              <div class="calendar-day">8</div>
+              <!-- Week 3 -->
+              <div class="calendar-day">9</div>
+              <div class="calendar-day">10</div>
+              <div class="calendar-day">11</div>
+              <div class="calendar-day">12</div>
+              <div class="calendar-day today">13</div>
+              <div class="calendar-day">14</div>
+              <div class="calendar-day">15</div>
+              <!-- Week 4 -->
+              <div class="calendar-day">16</div>
+              <div class="calendar-day">17</div>
+              <div class="calendar-day">18</div>
+              <div class="calendar-day">19</div>
+              <div class="calendar-day has-event">20</div>
+              <div class="calendar-day">21</div>
+              <div class="calendar-day">22</div>
+              <!-- Week 5 -->
+              <div class="calendar-day">23</div>
+              <div class="calendar-day">24</div>
+              <div class="calendar-day">25</div>
+              <div class="calendar-day">26</div>
+              <div class="calendar-day">27</div>
+              <div class="calendar-day">28</div>
+              <div class="calendar-day">29</div>
+              <div class="calendar-day">30</div>
+              <div class="calendar-day">31</div>
+            </div>
+
+            <hr class="section-divider" />
+            <div class="text-sm text-muted mt-8">
+              <span class="flex-center gap-8"><span style="color:var(--primary);font-weight:700;">●</span> Highlighted = company events</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- end last row -->
+
+      </main>
+      <!-- end .main-content -->
+
+    </div>
+    <!-- end .main-wrapper -->
+
+  </div>
+  <!-- end .app-container -->
+
+</body>
+</html>

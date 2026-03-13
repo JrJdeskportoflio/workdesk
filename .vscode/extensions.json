@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ecmel.vscode-html-css",
+    "zignd.html-css-class-completion",
+    "stylelint.vscode-stylelint",
+    "formulahendry.auto-rename-tag",
+    "formulahendry.auto-close-tag",
+    "naumovs.color-highlight",
+    "pkief.material-icon-theme",
+    "zhuangtongfa.material-theme",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "cloudflare.cloudflare-workers-bindings",
+    "humao.rest-client",
+    "christian-kohler.path-intellisense"
+  ]
+}

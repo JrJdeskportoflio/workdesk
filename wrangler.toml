@@ -1,0 +1,32 @@
+# JDesk Workspace — Cloudflare Pages Configuration
+# Deploy: https://pages.cloudflare.com
+# Docs: https://developers.cloudflare.com/pages/
+
+name = "jdesk-workspace"
+compatibility_date = "2024-01-01"
+
+# ── Pages (static site) ──────────────────────────────────────
+# Set your build output directory for Cloudflare Pages.
+# Since this is a static HTML project with no build step, the root is used.
+# In the Cloudflare dashboard, set:
+#   Framework preset: None
+#   Build command:    (leave empty)
+#   Build output dir: /
+#   Root directory:   /
+
+# ── Workers (API routes) ─────────────────────────────────────
+# Uncomment and configure when adding Cloudflare Workers API endpoints.
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "jdesk-db"
+# database_id = "YOUR_D1_DATABASE_ID"
+
+# [vars]
+# ENVIRONMENT = "production"
+# APP_NAME = "JDesk Workspace"
+
+# ── KV Namespaces ─────────────────────────────────────────────
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = "YOUR_KV_NAMESPACE_ID"
