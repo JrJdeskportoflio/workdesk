@@ -1,6 +1,7 @@
 # WorkDesk — Cloudflare Pages + Workers Configuration
 # Design system: see DESIGN_SYSTEM.md
 # Feature docs:  see FEATURES.md
+# Worker deploy guide (incl. SA secrets setup): see workers/DEPLOY.md
 # Deploy: https://pages.cloudflare.com
 # Docs: https://developers.cloudflare.com/pages/
 
@@ -132,4 +133,14 @@ not_found_handling = "single-page-application"
 #
 # Secrets (set via CLI, never commit):
 #   wrangler secret put OPENAI_API_KEY    # optional: external LLM for AI assistant
+#
+# Super-Admin secrets (required for /api/sa-auth and /api/sa-org-admins).
+# Run these commands and enter each value when prompted:
+#   wrangler secret put SA_USERNAME     --name workdesk-worker
+#   wrangler secret put SA_SECURITY_KEY --name workdesk-worker
+#   wrangler secret put SA_PASSWORD     --name workdesk-worker
+#
+# To verify all three are set:   wrangler secret list --name workdesk-worker
+# To re-add a deleted secret:    re-run the matching command above
+# Full guide: workers/DEPLOY.md
 
