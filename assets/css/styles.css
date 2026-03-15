@@ -305,6 +305,8 @@ img {
   justify-content: space-between;
   padding: 0 30px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 40;
   animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -2845,6 +2847,41 @@ hr.section-divider {
   white-space: nowrap;
   margin-left: 4px;
   align-self: center;
+}
+
+/* ── AUX Clock In/Out buttons ──────────────────────── */
+.aux-clock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  transition: opacity 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.aux-clock-btn:active { transform: scale(0.96); }
+
+.aux-clock-btn.clock-in {
+  background: var(--success);
+  color: #fff;
+}
+
+.aux-clock-btn.clock-out {
+  background: var(--danger);
+  color: #fff;
+}
+
+.aux-clock-btn:hover { opacity: 0.85; }
+
+.aux-clock-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ── Settings page ──────────────────────────────────── */
