@@ -111,7 +111,7 @@ async function routeRequest(path, method, request, env, ctx) {
     request,
     env,
     params: {},
-    next:   () => errorResponse(500, 'next() is not supported in standalone worker'),
+    next:   () => errorResponse(500, 'next() is not supported in standalone worker mode — this is only available in Cloudflare Pages Functions'),
     data:   {},
   });
 
