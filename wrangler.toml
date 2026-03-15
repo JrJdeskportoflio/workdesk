@@ -1,5 +1,6 @@
 # WorkDesk — Cloudflare Pages + Workers Configuration
 # Design system: see DESIGN_SYSTEM.md
+# Feature docs:  see FEATURES.md
 # Deploy: https://pages.cloudflare.com
 # Docs: https://developers.cloudflare.com/pages/
 
@@ -24,54 +25,75 @@ not_found_handling = "single-page-application"
 # Root directory:   /
 
 # ── Workers API routes ────────────────────────────────────────
-# Cloudflare Pages Functions live in /functions/*.js
-# Each file maps to an API endpoint, e.g.:
-#   functions/api/messages.js  → /api/messages
-#   functions/api/timeline.js  → /api/timeline
-#   functions/api/auth.js      → /api/auth
+# Cloudflare Pages Functions live in /functions/api/*.js
+# Each file maps automatically to its /api/<name> endpoint:
 #
-# Example function structure (create in /functions/api/):
-#   export async function onRequest(context) {
-#     const { request, env } = context;
-#     // Use env.DB (D1), env.SESSIONS (KV), env.MESSAGES (KV)
-#     return new Response(JSON.stringify({ ok: true }), {
-#       headers: { 'Content-Type': 'application/json' }
-#     });
-#   }
+#   functions/api/auth.js          → POST/GET /api/auth
+#   functions/api/employees.js     → GET/POST/PUT/DELETE /api/employees
+#   functions/api/attendance.js    → GET/POST /api/attendance[/clock-in|/clock-out]
+#   functions/api/leave.js         → GET/POST /api/leave[/approve|/reject]
+#   functions/api/payroll.js       → GET/POST /api/payroll[/run]
+#   functions/api/performance.js   → GET/POST/PUT /api/performance
+#   functions/api/recruitment.js   → GET/POST/PUT/DELETE /api/recruitment
+#   functions/api/tickets.js       → GET/POST/PUT/DELETE /api/tickets
+#   functions/api/documents.js     → GET/POST/PUT/DELETE /api/documents
+#   functions/api/messages.js      → GET/POST/DELETE /api/messages
+#   functions/api/timeline.js      → GET/POST/DELETE /api/timeline[/react|/comments]
+#   functions/api/engagement.js    → GET/POST /api/engagement[/survey]
+#   functions/api/analytics.js     → GET /api/analytics
+#   functions/api/ai.js            → POST /api/ai, GET /api/ai/history
+#   functions/api/knowledge.js     → GET/POST/PUT/DELETE /api/knowledge
+#   functions/api/integrations.js  → GET/POST/PUT/DELETE /api/integrations
+#
+# See FEATURES.md §4 for the complete API reference.
 
-# ── D1 Database (messages, timeline posts, sessions) ─────────
-# Uncomment and set your D1 database ID after creating it:
+# ── D1 Database ───────────────────────────────────────────────
+# Stores employees, attendance, leave, payroll, messages, timeline,
+# tickets, documents, performance, recruitment, surveys, knowledge, integrations.
+#
+# Setup:
 #   wrangler d1 create workdesk-db
+#   wrangler d1 execute workdesk-db --file=./schema.sql
+#
+# Then uncomment and fill in database_id below:
 #
 # [[d1_databases]]
 # binding = "DB"
 # database_name = "workdesk-db"
 # database_id = "YOUR_D1_DATABASE_ID"
 
-# ── KV Namespaces ────────────────────────────────────────────
-# Sessions store: user session tokens
+# ── KV Namespaces ─────────────────────────────────────────────
+# SESSIONS: stores user session tokens
 #   wrangler kv:namespace create "SESSIONS"
 #
 # [[kv_namespaces]]
 # binding = "SESSIONS"
 # id = "YOUR_KV_NAMESPACE_ID"
 
-# Messages cache (optional — supplement D1 with KV for fast reads)
-# [[kv_namespaces]]
-# binding = "MESSAGES"
-# id = "YOUR_MESSAGES_KV_ID"
+# ── R2 Storage ────────────────────────────────────────────────
+# ATTACHMENTS: stores file uploads (documents, message attachments)
+#   wrangler r2 bucket create workdesk-attachments
+#
+# [[r2_buckets]]
+# binding = "ATTACHMENTS"
+# bucket_name = "workdesk-attachments"
+
+# ── AI Binding (optional) ─────────────────────────────────────
+# Enable Cloudflare Workers AI for the AI Assistant page.
+# Uncomment after enabling Workers AI on your account.
+#
+# [ai]
+# binding = "AI"
 
 # ── Environment variables ─────────────────────────────────────
-# Set sensitive values via `wrangler secret put SECRET_NAME`
+# Set sensitive values via: wrangler secret put SECRET_NAME
 # Non-sensitive vars can go here:
 #
 # [vars]
 # ENVIRONMENT = "production"
 # APP_NAME = "WorkDesk"
 # ALLOWED_EMAIL_DOMAIN = "yourcompany.com"
-
-# ── R2 Storage (file attachments in messaging) ────────────────
-# [[r2_buckets]]
-# binding = "ATTACHMENTS"
-# bucket_name = "workdesk-attachments"
+#
+# Secrets (set via CLI, never commit):
+#   wrangler secret put OPENAI_API_KEY    # optional: external LLM for AI assistant
 

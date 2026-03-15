@@ -2,12 +2,12 @@
 
 // Function to handle CEO login with Cloudflare secrets
 async function ceoLogin() {
-    const response = await fetch('/api/login', {
+    const response = await fetch('/api/auth', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            username: document.getElementById('username').value,
-            orgId: document.getElementById('orgId').value
+            email: document.getElementById('username') ? document.getElementById('username').value : '',
+            password: document.getElementById('orgId') ? document.getElementById('orgId').value : '',
         })
     });
     const data = await response.json();
