@@ -938,7 +938,8 @@ function submitTicket() {
   updateStats();
   // Push notification for new ticket
   if (window.WDNotifications) {
-    window.WDNotifications.push('ticket', 'New ticket <strong>' + id + '</strong>: ' + title, 'tickets.html');
+    const safeTitle = title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    window.WDNotifications.push('ticket', 'New ticket <strong>' + id + '</strong>: ' + safeTitle, 'tickets.html');
   }
 }
 

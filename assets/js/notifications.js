@@ -64,7 +64,9 @@
   function pushNotification(type, text, href) {
     var list = loadNotifications();
     var id   = 'notif-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-    list.unshift({ id: id, type: type, text: text, href: href || '#', unread: true, ts: Date.now() });
+    // Sanitize href: only allow relative paths and http/https URLs
+    var safeHref = (href && /^(https?:\/\/|\/|[a-z0-9_\-./]+\.html)/i.test(href)) ? href : '#';
+    list.unshift({ id: id, type: type, text: text, href: safeHref, unread: true, ts: Date.now() });
     if (list.length > MAX_NOTIFS) list = list.slice(0, MAX_NOTIFS);
     saveNotifications(list);
     renderNotifications();
