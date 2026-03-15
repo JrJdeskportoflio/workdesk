@@ -1108,9 +1108,57 @@ hr.section-divider {
 .gap-12 { gap: 12px; }
 
 /* ===============================
-   RESPONSIVE
+   MOBILE NAVIGATION
+   Hamburger button + sidebar drawer
 =============================== */
 
+/* ── Hamburger toggle button — visible on mobile, hidden on desktop ─── */
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+.mobile-menu-btn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* ── Sidebar backdrop overlay ────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 45;
+  animation: fadeIn 0.2s ease;
+}
+
+.sidebar-overlay.open {
+  display: block;
+}
+
+/* ===============================
+   RESPONSIVE
+   Breakpoints: 1100px · 768px · 480px
+=============================== */
+
+/* ── Tablet (≤ 1100px) ───────────────────────────── */
 @media (max-width: 1100px) {
   .grid {
     grid-template-columns: 1fr 1fr;
@@ -1119,14 +1167,54 @@ hr.section-divider {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
-
 }
 
+/* ── Mobile (≤ 768px) ────────────────────────────── */
 @media (max-width: 768px) {
+
+  /* ── Sidebar: fixed drawer from left ─────────── */
   .sidebar {
-    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.14);
   }
 
+  /* Force full expanded state when drawer is open */
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar.mobile-open .nav-label {
+    opacity: 1;
+    max-width: 200px;
+  }
+
+  .sidebar.mobile-open .sidebar-section-label {
+    opacity: 1;
+    height: 28px;
+  }
+
+  .sidebar.mobile-open .sidebar-section-label:first-of-type {
+    height: 20px;
+  }
+
+  .sidebar.mobile-open .msg-nav-badge {
+    opacity: 1;
+  }
+
+  /* Sidebar menu items — touch-friendly targets */
+  .sidebar-menu li {
+    padding: 13px 14px;
+    min-height: 44px;
+  }
+
+  /* ── Grids collapse to single column ─────────── */
   .grid,
   .grid-2,
   .grid-4 {
@@ -1137,6 +1225,7 @@ hr.section-divider {
     grid-column: span 1;
   }
 
+  /* ── Login page ───────────────────────────────── */
   .login-card {
     grid-template-columns: 1fr;
   }
@@ -1149,16 +1238,243 @@ hr.section-divider {
     padding: 36px 28px;
   }
 
+  /* ── Main content ─────────────────────────────── */
   .main-content {
-    padding: 20px;
+    padding: 16px;
   }
 
+  /* ── Topbar ───────────────────────────────────── */
   .topbar {
-    padding: 0 16px;
+    padding: 0 14px;
+    height: 60px;
+    gap: 10px;
   }
 
+  .topbar-left {
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .topbar-left h2 {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Collapse search box on mobile */
   .search-box {
-    width: 180px;
+    display: none;
+  }
+
+  /* Hide live clock on mobile */
+  .live-clock-wrap {
+    display: none;
+  }
+
+  /* Tighten topbar action gap */
+  .topbar-actions {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Touch-friendly icon buttons */
+  .topbar-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ── Page header ──────────────────────────────── */
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  /* ── Stat cards: horizontal on mobile ────────── */
+  .stat-card {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .stat-number {
+    font-size: 22px;
+  }
+
+  /* ── Cards ────────────────────────────────────── */
+  .card {
+    padding: 16px;
+  }
+
+  /* ── Messaging: stack panels vertically ────────── */
+  .msg-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+
+  .msg-list {
+    width: 100%;
+    max-height: 320px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .msg-chat {
+    height: calc(100vh - 60px - 320px);
+    min-height: 300px;
+  }
+
+  /* ── Buttons ───────────────────────────────────── */
+  .btn {
+    min-height: 44px;
+  }
+
+  /* ── Status badge — compact (text hidden, dot visible) ─── */
+  .status-badge {
+    padding: 5px 8px;
+    gap: 0;
+  }
+
+  .status-badge #statusLabel {
+    display: none;
+  }
+
+  .status-badge .status-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* ── AUX clock buttons — compact ─────────────── */
+  .aux-clock-btn {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  /* ── Settings layout stack ────────────────────── */
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Tables: horizontal scroll ────────────────── */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 580px;
+  }
+
+  /* ── Modal / overlay boxes ────────────────────── */
+  .modal-box,
+  .bulk-modal-box {
+    padding: 20px 16px;
+  }
+
+  /* ── Aux timer hidden on mobile ───────────────── */
+  .aux-timer {
+    display: none;
+  }
+}
+
+/* ── Small phone (≤ 480px) ───────────────────────── */
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 10px;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .stat-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .topbar-left h2 {
+    font-size: 15px;
+  }
+
+  .page-header h1 {
+    font-size: 16px;
+  }
+
+  /* Hide extra topbar actions on very small screens */
+  .topbar-icon-btn.hide-xs {
+    display: none;
+  }
+
+  .topbar-actions {
+    gap: 6px;
+  }
+
+  .login-form {
+    padding: 28px 18px;
+  }
+
+  .login-card {
+    max-width: 100%;
+    border-radius: 0;
+    min-height: 100vh;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .login-wrapper {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  /* Donut/bar charts can overflow on tiny screens */
+  .chart-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ── Safe-area insets for notched phones ────────── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .topbar {
+    padding-left: calc(14px + env(safe-area-inset-left));
+    padding-right: calc(14px + env(safe-area-inset-right));
+  }
+
+  .sidebar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .main-content {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 769px) {
+  @supports (padding: env(safe-area-inset-right)) {
+    .topbar {
+      padding-left: calc(30px + env(safe-area-inset-left));
+      padding-right: calc(30px + env(safe-area-inset-right));
+    }
   }
 }
 
@@ -3186,12 +3502,6 @@ hr.section-divider {
   background: var(--primary);
   color: #fff;
   font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .settings-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ===============================

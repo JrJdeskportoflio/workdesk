@@ -142,6 +142,10 @@
 <body>
 <div class="app-container">
 
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-logo">
@@ -198,6 +202,13 @@
     <!-- ══ TOPBAR ══ -->
     <header class="topbar">
       <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <h2>Documents</h2>
         <input class="search-box" type="search" id="globalSearch" placeholder="Search documents…" aria-label="Search documents" oninput="handleGlobalSearch(this.value)" />
       </div>
