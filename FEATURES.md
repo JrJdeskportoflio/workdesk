@@ -77,9 +77,10 @@
 - **Inputs**: Email address, password.
 - **On success**: Stores `workdesk_token` and `workdesk_display_name` in `localStorage`;
   redirects to `dashboard.html`.
-- **Demo credentials**: Any `@workdesk.ph` or `@company.com` email + password `workdesk2025`.
 - **Production path**: Replace demo check in `functions/api/auth.js` with D1 `users` table lookup
-  and issue a signed JWT.
+  and issue a signed JWT. For staging/testing access, set `DEMO_ORG_ID`, `DEMO_EMPLOYEE_ID`,
+  and `DEMO_PASSWORD` as Cloudflare Pages environment variables (never commit these values to
+  source control).
 
 ### 3.2 Dashboard (`dashboard.html`)
 - **Purpose**: Landing page after login. Shows KPI stat cards, attendance summary,

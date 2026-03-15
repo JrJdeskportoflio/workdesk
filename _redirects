@@ -1,0 +1,5 @@
+# Super admin pages are not served on this deployment.
+# They are managed and deployed separately.
+/sa-portal.html / 301
+/sa-dashboard.html / 301
+/api/sa-auth / 301
