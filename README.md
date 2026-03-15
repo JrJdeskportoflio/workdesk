@@ -1,6 +1,6 @@
 # WorkDesk Hub
 
-> **WorkDesk** is a comprehensive Human Resource Information System (HRIS) built as a zero-dependency, static web application deployed on Cloudflare Pages. It covers everything from employee management to payroll, attendance, messaging, and more — all in a clean, modern interface.
+> **WorkDesk** is a comprehensive Employers/Employee workhub built as a zero-dependency, static web application deployed on Cloudflare Pages. It covers everything from employee management to payroll, attendance, messaging, and more — all in a clean, modern interface.
 
 ---
 
