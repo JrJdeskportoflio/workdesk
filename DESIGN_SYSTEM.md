@@ -209,20 +209,58 @@ compatibility with **Cloudflare Pages** (static delivery, no Node.js runtime on 
 ```
 WorkDesk/
 ├── DESIGN_SYSTEM.md        ← this file (design protection)
+├── FEATURES.md             ← feature docs, API reference, best practices (read before coding)
 ├── wrangler.toml           ← Cloudflare Workers/Pages config
 ├── _headers                ← Cloudflare Pages HTTP headers
+├── index.html              ← Root entry — redirects to login.html
 ├── login.html              ← Login / sign-in page
 ├── dashboard.html          ← Main HRIS dashboard
+├── employees.html          ← Employee directory (CRUD)
+├── attendance.html         ← Attendance tracking & clock in/out
+├── leave.html              ← Leave request management
+├── payroll.html            ← Payroll ledger & payroll run
+├── performance.html        ← Performance reviews & KPIs
+├── recruitment.html        ← Job postings & applicant pipeline
+├── tickets.html            ← Support ticket help-desk
+├── documents.html          ← Document repository
+├── projects.html           ← Projects (coming soon placeholder)
 ├── messaging.html          ← Direct & group messaging
 ├── timeline.html           ← Company-wide timeline feed
+├── engagement.html         ← Pulse surveys & engagement scores
+├── analytics.html          ← HR analytics & charts
+├── ai-assistant.html       ← AI-powered HR assistant chat
+├── knowledge.html          ← Knowledge base / internal wiki
+├── integrations.html       ← Third-party integrations
+├── settings.html           ← User profile & platform settings
+├── auth.js                 ← Shared logout() helper (included on every page)
 ├── Baground theme login page .png   ← Login background image
-└── assets/
-    ├── css/
-    │   └── styles.css      ← All styles (single stylesheet, CSS variables)
-    └── js/
-        ├── dashboard.js    ← Dashboard interactivity
-        ├── messaging.js    ← Messaging UI logic
-        └── timeline.js     ← Timeline UI logic
+├── assets/
+│   ├── css/
+│   │   └── styles.css      ← All styles (single stylesheet, CSS variables)
+│   ├── js/
+│   │   ├── dashboard.js    ← Dashboard interactivity
+│   │   ├── messaging.js    ← Messaging UI logic
+│   │   └── timeline.js     ← Timeline UI logic
+│   └── images/
+│       └── employees/      ← Employee avatar SVGs (EMP-001 … EMP-012)
+└── functions/
+    └── api/
+        ├── auth.js         ← POST/GET /api/auth
+        ├── employees.js    ← CRUD /api/employees
+        ├── attendance.js   ← /api/attendance[/clock-in|/clock-out]
+        ├── leave.js        ← /api/leave[/approve|/reject]
+        ├── payroll.js      ← /api/payroll[/run]
+        ├── performance.js  ← CRUD /api/performance
+        ├── recruitment.js  ← CRUD /api/recruitment
+        ├── tickets.js      ← CRUD /api/tickets
+        ├── documents.js    ← CRUD /api/documents
+        ├── messages.js     ← /api/messages
+        ├── timeline.js     ← /api/timeline[/react|/comments]
+        ├── engagement.js   ← /api/engagement[/survey]
+        ├── analytics.js    ← GET /api/analytics
+        ├── ai.js           ← POST /api/ai, GET /api/ai/history
+        ├── knowledge.js    ← CRUD /api/knowledge
+        └── integrations.js ← CRUD /api/integrations
 ```
 
 ---

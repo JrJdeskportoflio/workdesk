@@ -62,11 +62,11 @@
         var key = action.dataset.action;
         switch (key) {
           case 'leave':     window.location.href = 'leave.html'; break;
-          case 'ticket':    showToast('Ticketing module coming soon. Check Support → Ticketing.'); break;
+          case 'ticket':    window.location.href = 'tickets.html'; break;
           case 'employee':  window.location.href = 'employees.html'; break;
           case 'payroll':   window.location.href = 'payroll.html'; break;
-          case 'reports':   window.location.href = 'employees.html'; break;
-          case 'settings':  showToast('Settings panel coming soon.'); break;
+          case 'reports':   window.location.href = 'analytics.html'; break;
+          case 'settings':  window.location.href = 'settings.html'; break;
           case 'messages':  window.location.href = 'messaging.html'; break;
           case 'alerts':    showToast('No new alerts at this time.'); break;
           default:          showToast('Opening ' + (action.textContent.trim()) + '…'); break;
@@ -95,7 +95,7 @@
     var ticketsBtn = document.getElementById('manageTicketsBtn');
     if (ticketsBtn) {
       ticketsBtn.addEventListener('click', function () {
-        showToast('Ticketing module — coming soon.');
+        window.location.href = 'tickets.html';
       });
     }
 
@@ -103,8 +103,7 @@
     document.querySelectorAll('.ticket-item').forEach(function (item) {
       item.style.cursor = 'pointer';
       item.addEventListener('click', function () {
-        var title = item.querySelector('.ticket-title');
-        if (title) showToast('Viewing ticket: ' + title.textContent.trim());
+        window.location.href = 'tickets.html';
       });
     });
   }
