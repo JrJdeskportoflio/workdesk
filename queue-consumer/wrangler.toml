@@ -1,0 +1,43 @@
+# WorkDesk — Queue Consumer Worker
+# Standalone Cloudflare Worker that consumes messages from workdesk-queue.
+#
+# Deploy steps:
+#   1. Create the queue (once):
+#        npx wrangler queues create workdesk-queue
+#   2. Fill in your database_id and bucket_name below.
+#   3. Deploy this worker:
+#        cd queue-consumer && wrangler deploy
+#
+# The Pages project (parent wrangler.toml) acts as the PRODUCER.
+# This worker acts as the CONSUMER, processing background jobs.
+
+name              = "workdesk-queue-consumer"
+main              = "index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── Queue Consumer ────────────────────────────────────────────
+[[queues.consumers]]
+queue             = "workdesk-queue"
+max_batch_size    = 10
+max_batch_timeout = 5
+max_retries       = 3
+
+# ── D1 Database ───────────────────────────────────────────────
+# Same database used by the Pages Functions — share the database_id.
+#
+# [[d1_databases]]
+# binding       = "DB"
+# database_name = "workdesk-db"
+# database_id   = "YOUR_D1_DATABASE_ID"
+
+# ── R2 Storage ────────────────────────────────────────────────
+# Used by the report generator to store completed report files.
+#
+# [[r2_buckets]]
+# binding     = "UPLOADS"
+# bucket_name = "workdesk-attachments"
+
+# ── Environment variables ─────────────────────────────────────
+# [vars]
+# ENVIRONMENT = "production"

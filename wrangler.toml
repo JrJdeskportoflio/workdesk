@@ -87,19 +87,20 @@ not_found_handling = "single-page-application"
 # Setup:
 #   npx wrangler queues create workdesk-queue
 #
-# Then uncomment the bindings below.
-# The producer binding lets any Pages Function publish messages;
-# the consumer block configures this Worker to pull and process them.
+# Producer binding: lets any Pages Function publish messages to the queue.
+# Uncomment after running the setup command above.
+
+[[queues.producers]]
+binding = "WORKDESK_QUEUE"
+queue   = "workdesk-queue"
+
+# Consumer: Queue consumers are NOT supported in Cloudflare Pages Functions.
+# The consumer is a separate standalone Cloudflare Worker defined in the
+# queue-consumer/ directory. See queue-consumer/wrangler.toml for its config.
 #
-# [[queues.producers]]
-# binding = "WORKDESK_QUEUE"
-# queue   = "workdesk-queue"
-#
-# [[queues.consumers]]
-# queue             = "workdesk-queue"
-# max_batch_size    = 10
-# max_batch_timeout = 5
-# max_retries       = 3
+# To deploy the consumer:
+#   cd queue-consumer
+#   wrangler deploy
 
 # ── AI Binding (optional) ─────────────────────────────────────
 # Enable Cloudflare Workers AI for the AI Assistant page.

@@ -14,19 +14,33 @@
    - [Attendance Tracking](#4-attendance-tracking)
    - [Leave Management](#5-leave-management)
    - [Payroll](#6-payroll)
-   - [Messaging](#7-messaging)
-   - [Timeline](#8-timeline--announcements)
-   - [Settings](#9-settings)
+   - [Performance Management](#7-performance-management)
+   - [Recruitment](#8-recruitment)
+   - [Support Tickets](#9-support-tickets)
+   - [Documents](#10-documents)
+   - [Projects](#11-projects)
+   - [Messaging](#12-messaging)
+   - [Timeline / Announcements](#13-timeline--announcements)
+   - [Engagement Surveys](#14-engagement-surveys)
+   - [Analytics](#15-analytics)
+   - [AI Assistant](#16-ai-assistant)
+   - [Knowledge Base](#17-knowledge-base)
+   - [Integrations](#18-integrations)
+   - [Settings](#19-settings)
+   - [Notifications](#20-notifications)
+   - [Reports](#21-reports)
+   - [Super Admin](#22-super-admin)
 3. [Roles & Career Levels](#roles--career-levels)
 4. [Access & Permissions](#access--permissions)
 5. [Tech Stack](#tech-stack)
 6. [Project Structure](#project-structure)
-7. [Deployment](#deployment)
-8. [API Endpoints](#api-endpoints)
-9. [Design System](#design-system)
-10. [Getting Started (Local Preview)](#getting-started-local-preview)
-11. [Guidelines & Conventions](#guidelines--conventions)
-12. [License](#license)
+7. [Cloudflare Queue Integration](#cloudflare-queue-integration)
+8. [Deployment](#deployment)
+9. [API Endpoints](#api-endpoints)
+10. [Design System](#design-system)
+11. [Getting Started (Local Preview)](#getting-started-local-preview)
+12. [Guidelines & Conventions](#guidelines--conventions)
+13. [License](#license)
 
 ---
 
@@ -213,9 +227,232 @@ Company-wide announcement feed with role-based posting.
 | Leader Badge | "role: Leader" badge shown on leader-authored posts |
 | Timestamps | Relative timestamps ("10 minutes ago") |
 
+### 7. Performance Management
+
+**Page:** `performance.html`
+
+Track employee performance reviews, goals, and KPI scores over time.
+
+| Feature | Description |
+|---|---|
+| Review Table | List of reviews per employee with period, score, and comments |
+| Score Tracking | Numerical KPI scores with trend indicators |
+| Goal Setting | Document employee goals per review period |
+| Period Filter | View reviews by quarter or annual period |
+| Add Review | Modal form to create a new performance review |
+| Edit Review | Update an existing review record |
+
+**API:** `GET /api/performance?empId=&period=`, `POST /api/performance`, `PUT /api/performance`
+
 ---
 
-### 9. Settings
+### 8. Recruitment
+
+**Page:** `recruitment.html`
+
+Manage open job postings and track the applicant pipeline from application to offer.
+
+| Feature | Description |
+|---|---|
+| Job Postings Table | Active/closed roles with title, department, type, location, salary, status |
+| Applicant Pipeline | Candidates per job with stage tracking (Applied → Interview → Offer → Hired) |
+| Add Job Posting | Modal to create a new role with full details |
+| Update Stage | Move applicants through the hiring pipeline |
+| Archive Posting | Close a job once filled |
+| Tab Navigation | Switch between "Postings" and "Applicants" views |
+
+**API:** `GET /api/recruitment?type=postings`, `GET /api/recruitment?type=applicants`, `POST /api/recruitment`, `PUT /api/recruitment`, `DELETE /api/recruitment?id=`
+
+---
+
+### 9. Support Tickets
+
+**Page:** `tickets.html`
+
+Internal help-desk for IT and HR requests. Employees submit tickets; managers resolve them.
+
+| Feature | Description |
+|---|---|
+| Ticket List | All tickets with ID, subject, category, priority, status, assignee |
+| Status Filter | Filter by Open / In Progress / Resolved / Closed |
+| Priority Badges | Critical, High, Normal, Low color-coded labels |
+| Create Ticket | Modal with subject, category, priority, and description fields |
+| Update Status | Change ticket status and assignee |
+| Delete Ticket | Remove a ticket permanently |
+| Ticket Categories | IT Support, HR Query, Payroll Issue, Leave Request, Facilities |
+
+**API:** `GET /api/tickets?status=&priority=`, `POST /api/tickets`, `PUT /api/tickets`, `DELETE /api/tickets?id=`
+
+---
+
+### 10. Documents
+
+**Page:** `documents.html`
+
+Central repository for company policies, contracts, employee files, and other HR documents.
+
+| Feature | Description |
+|---|---|
+| Document Library | Paginated file list with name, category, size, uploader, date |
+| Category Tabs | Policies, Contracts, Employee Files, Templates, Other |
+| Search | Live search by document name or description |
+| Upload | Upload files (stored in Cloudflare R2 `ATTACHMENTS` bucket) |
+| Download | Retrieve files via signed R2 URL |
+| Delete | Remove document record and underlying R2 object |
+
+**API:** `GET /api/documents?category=&search=`, `POST /api/documents`, `PUT /api/documents`, `DELETE /api/documents?id=`
+
+---
+
+### 11. Projects
+
+**Page:** `projects.html`
+
+Team project management — task boards and milestones. Currently a "coming soon" placeholder.
+
+> **Note:** No backend API exists for this page. Do not build one until the UI is scoped and approved.
+
+---
+
+### 12. Messaging
+
+**Page:** `messaging.html`
+
+Internal direct and group messaging system.
+
+| Feature | Description |
+|---|---|
+| Direct Messages | One-on-one conversations with online/away/offline status |
+| Group Chats | Group conversations (HR Department, All Employees, Finance Team, etc.) |
+| Message Bubbles | Outbound (teal), Inbound (gray) with timestamps and read receipts (✓✓) |
+| Compose Area | Text input with emoji, attachment, and send button |
+| Pin Messages | Mark important messages for quick access |
+| Archive Threads | Remove conversations from active list |
+| Search | Filter threads by name or message content |
+| Tab Navigation | Switch between Direct and Group views |
+| Notification Badge | Unread message count shown in sidebar |
+
+**API:** `GET /api/messages?thread=`, `POST /api/messages`, `DELETE /api/messages?id=`
+
+---
+
+### 13. Timeline / Announcements
+
+**Page:** `timeline.html`
+
+Company-wide announcement feed with role-based posting.
+
+| Feature | Description |
+|---|---|
+| Post Feed | Chronological list of announcements and updates |
+| Leader Posts | Only users with `role: leader` can create new posts |
+| Compose Area | Visible only to leaders — "Share an announcement…" input + Post button |
+| Emoji Reactions | React to posts with emoji reactions |
+| Comments | Expandable comment threads on each post |
+| Leader Badge | "role: Leader" badge shown on leader-authored posts |
+| Timestamps | Relative timestamps ("10 minutes ago") |
+
+**API:** `GET /api/timeline?page=`, `POST /api/timeline`, `POST /api/timeline/react`, `POST /api/timeline/comments`, `DELETE /api/timeline?id=`
+
+---
+
+### 14. Engagement Surveys
+
+**Page:** `engagement.html`
+
+Run pulse surveys to measure employee satisfaction and engagement scores.
+
+| Feature | Description |
+|---|---|
+| Survey List | Active and past surveys with titles and due dates |
+| Satisfaction Score | Rolling eNPS / satisfaction score chart |
+| Submit Response | Employees answer questions anonymously |
+| Create Survey | HR admins create new surveys with questions and due dates |
+| Results View | Aggregate response data per question |
+
+**API:** `GET /api/engagement?surveyId=`, `POST /api/engagement`, `POST /api/engagement/survey`
+
+---
+
+### 15. Analytics
+
+**Page:** `analytics.html`
+
+HR metrics dashboard with charts for headcount, attendance, turnover, payroll cost, and more.
+
+| Feature | Description |
+|---|---|
+| Headcount Chart | Total employees over time, breakdown by department |
+| Attendance Overview | Present / Late / Absent daily and monthly trends |
+| Turnover Rate | Monthly attrition percentage chart |
+| Payroll Cost | Monthly gross payroll spend |
+| Export | Download data as CSV or PDF |
+| Date Range Filter | Narrow charts to a specific time window |
+
+**API:** `GET /api/analytics?report=summary|headcount|attendance|turnover|payroll`
+
+---
+
+### 16. AI Assistant
+
+**Page:** `ai-assistant.html`
+
+Conversational AI for HR policy questions, employee queries, and data lookups.
+
+| Feature | Description |
+|---|---|
+| Chat Interface | Message bubbles, typing indicator, timestamp |
+| Suggested Questions | Preset quick-action chips for common queries |
+| HR Policy Q&A | Ask about leave policies, payroll rules, company guidelines |
+| Data Lookup | Query employee counts, attendance, leave balances |
+| Conversation History | Previous session messages (stored per token) |
+
+**Backend options:**
+- Cloudflare Workers AI (`env.AI`) — free tier, runs `@cf/meta/llama-3-8b-instruct` by default.
+- External LLM — set `OPENAI_API_KEY` secret for OpenAI or any compatible provider.
+
+**API:** `POST /api/ai`, `GET /api/ai/history`
+
+---
+
+### 17. Knowledge Base
+
+**Page:** `knowledge.html`
+
+Internal HR wiki — policies, procedures, FAQs, and onboarding guides.
+
+| Feature | Description |
+|---|---|
+| Article Library | Browsable list with title, category, author, and date |
+| Category Filter | HR Policy, IT Guidelines, Onboarding, Benefits, Other |
+| Search | Full-text search across article titles and content |
+| Create Article | Rich markdown editor (rendered as HTML) |
+| Edit / Delete | Update or remove articles (manager-level access) |
+| Tags | Freeform tags for discoverability |
+
+**API:** `GET /api/knowledge?category=&search=`, `POST /api/knowledge`, `PUT /api/knowledge`, `DELETE /api/knowledge?id=`
+
+---
+
+### 18. Integrations
+
+**Page:** `integrations.html`
+
+Connect WorkDesk to third-party tools via OAuth or API key.
+
+| Feature | Description |
+|---|---|
+| Integration Cards | Visual grid of available integrations with status badges |
+| Connect / Disconnect | Enable or disable each integration |
+| Config Editor | Provide API keys, webhook URLs, or scopes per integration |
+| Supported Integrations | Slack, Google Workspace, Zoom, GitHub, Jira, Xero, QuickBooks, Zapier, Webhooks |
+| Status Indicators | Connected (green), Disconnected (gray), Error (red) |
+
+**API:** `GET /api/integrations`, `POST /api/integrations`, `PUT /api/integrations`, `DELETE /api/integrations?id=`
+
+---
+
+### 19. Settings
 
 **Page:** `settings.html`
 
@@ -229,10 +466,70 @@ Central configuration hub for profiles, roles, permissions, and organization set
 | Organization Settings | Admin+ | Org name, industry, size, timezone, country; manage Admin users |
 | Platform Settings | Admin+ | Time format (12h/24h), date format, currency, work week start, notifications, audit footprints |
 
-**Super Admin exclusive features** (Platform Settings tab):
-- Create a new Organization
-- Modify or deactivate Organizations
-- Add / remove Organization Admin access
+---
+
+### 20. Notifications
+
+**API endpoint:** `/api/notifications`
+
+In-app notification delivery for leave approvals, payroll events, mentions, system alerts, and
+any event that the platform pushes to a specific user.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/notifications` | List notifications for the current user |
+| POST | `/api/notifications` | Create a new notification (also publishes to Cloudflare Queue) |
+| PATCH | `/api/notifications?id=N-X` | Mark a notification as read |
+| DELETE | `/api/notifications?id=N-X` | Delete a notification |
+
+---
+
+### 21. Reports
+
+**API endpoint:** `/api/reports`
+
+Generate and export HR reports across all modules for a selected date range and format.
+
+| Report Type | Description |
+|---|---|
+| `hr_summary` | Full employee roster snapshot |
+| `attendance` | Time-in/out records for the period |
+| `payroll` | Payroll ledger rows |
+| `leave` | Leave requests and balances |
+| `performance` | Performance review scores |
+| `recruitment` | Job postings and applicant pipeline |
+| `platform_usage` | Page-view and API usage metrics |
+| `engagement` | Survey response aggregates |
+| `tickets` | Support ticket activity |
+
+**Formats:** `json`, `csv`, `xlsx`
+
+Generating a report queues the job to `WORKDESK_QUEUE`; the queue consumer aggregates D1
+data, serializes the output, and uploads the file to R2 for download.
+
+**API:** `GET /api/reports` (list recent), `POST /api/reports` (generate new)
+
+---
+
+### 22. Super Admin
+
+**Pages:** `super-admin/sa-portal.html`, `super-admin/sa-dashboard.html`
+
+Platform-level administration for the WorkDesk owner / CEO. Completely separate from
+Organization Admin access.
+
+| Feature | Description |
+|---|---|
+| SA Login | Separate login page with SA-specific credentials |
+| Organization List | View all organizations on the platform |
+| Create Organization | Add a new org with name, domain, and admin contact |
+| Edit / Deactivate Org | Modify org details or suspend access |
+| Org Admin CRUD | Assign, update, or revoke Organization Admin credentials |
+
+**Auth:** SA tokens contain `:sa:` in the base64-decoded payload; all SA endpoints verify this
+before processing any request.
+
+**API:** `POST /api/sa-auth`, `GET/POST/PUT/DELETE /api/sa-org-admins`
 
 ---
 
@@ -316,11 +613,13 @@ Each level may approve requests from the level directly below it. Managers and a
 | Layer | Technology |
 |---|---|
 | Frontend | Pure HTML5, CSS3 (custom design tokens), Vanilla ES6 JavaScript |
-| Backend | Cloudflare Workers (JavaScript) |
+| Backend | Cloudflare Pages Functions (JavaScript) |
 | Hosting | Cloudflare Pages |
 | Database | Cloudflare D1 (SQLite, Workers binding) |
 | Session Store | Cloudflare KV |
 | File Storage | Cloudflare R2 |
+| Background Jobs | Cloudflare Queues |
+| AI | Cloudflare Workers AI / OpenAI (optional) |
 | Fonts | Google Fonts — Inter |
 | Assets / CDN | Cloudinary (logo asset) |
 
@@ -333,41 +632,123 @@ Each level may approve requests from the level directly below it. Managers and a
 ```
 WorkDesk/
 ├── README.md                          ← This file
+├── FEATURES.md                        ← Authoritative feature reference & API docs
 ├── DESIGN_SYSTEM.md                   ← Design tokens, brand guidelines
-├── wrangler.toml                      ← Cloudflare Workers/Pages config
+├── wrangler.toml                      ← Cloudflare Pages + Queue producer config
 ├── _headers                           ← Cloudflare Pages HTTP security headers
-├── index.html                         ← Root redirect to login.html
-├── login.html                         ← Authentication page
-├── dashboard.html                     ← Main HRIS dashboard
-├── employees.html                     ← Employee directory & management
-├── attendance.html                    ← Attendance tracking
-├── leave.html                         ← Leave request management
-├── payroll.html                       ← Payroll overview
-├── messaging.html                     ← Internal messaging
-├── timeline.html                      ← Announcement feed
-├── settings.html                      ← Settings (profile, roles, permissions, org, platform)
-├── auth.js                            ← Shared auth helpers (login/logout)
-├── Baground theme login page .png     ← Login background image
+├── _redirects                         ← URL redirect rules
+├── auth.js                            ← Shared logout() helper (included on every page)
+│
+├── ── HTML Pages ───────────────────────────────────────────────────────────
+├── index.html                         ← Root redirect → login.html
+├── login.html                         ← Authentication / sign-in
+├── dashboard.html                     ← Main HRIS dashboard (KPIs, charts, quick actions)
+├── employees.html                     ← Employee directory & CRUD
+├── attendance.html                    ← Clock in/out, attendance log, manual entry
+├── leave.html                         ← Leave requests: file, approve, reject
+├── payroll.html                       ← Payroll ledger and payroll run
+├── performance.html                   ← Performance reviews, goals, KPI tracking
+├── recruitment.html                   ← Job postings and applicant pipeline
+├── tickets.html                       ← Internal IT/HR help-desk
+├── documents.html                     ← Document repository (R2-backed)
+├── projects.html                      ← Team projects (coming soon placeholder)
+├── messaging.html                     ← Direct and group messaging
+├── timeline.html                      ← Company-wide announcement feed
+├── engagement.html                    ← Pulse surveys and satisfaction scores
+├── analytics.html                     ← HR metrics and charts
+├── ai-assistant.html                  ← AI-powered HR Q&A (Workers AI / OpenAI)
+├── knowledge.html                     ← Internal HR wiki and policies
+├── integrations.html                  ← Third-party integrations (Slack, Zoom, Xero…)
+├── settings.html                      ← Profile, org config, platform settings
+│
+├── super-admin/
+│   ├── sa-portal.html                 ← Super Admin login
+│   ├── sa-dashboard.html              ← Super Admin management dashboard
+│   └── _headers                       ← Security headers for SA routes
+│
 ├── assets/
 │   ├── css/
-│   │   └── styles.css                 ← Single global stylesheet (CSS tokens)
+│   │   └── styles.css                 ← Single global stylesheet (CSS design tokens)
 │   ├── js/
 │   │   ├── dashboard.js               ← Dashboard page logic
 │   │   ├── messaging.js               ← Messaging page logic
 │   │   └── timeline.js                ← Timeline page logic
 │   └── images/
-│       └── employees/                 ← Employee photos (named by Employee ID)
-│           ├── EMP-001.svg
-│           ├── EMP-002.svg
-│           └── …
-└── functions/
-    └── api/
-        ├── auth.js                    ← POST /api/auth — login endpoint
-        ├── employees.js               ← GET/POST /api/employees
-        ├── attendance.js              ← GET/POST /api/attendance
-        ├── leave.js                   ← GET/POST /api/leave
-        └── payroll.js                 ← GET /api/payroll
+│       └── employees/                 ← Employee photos (named by Employee ID, e.g. EMP-001.svg)
+│
+├── functions/
+│   └── api/                           ← Cloudflare Pages Functions (one file = one endpoint)
+│       ├── auth.js                    ← POST/GET /api/auth
+│       ├── employees.js               ← /api/employees
+│       ├── attendance.js              ← /api/attendance
+│       ├── leave.js                   ← /api/leave
+│       ├── payroll.js                 ← /api/payroll
+│       ├── performance.js             ← /api/performance
+│       ├── recruitment.js             ← /api/recruitment
+│       ├── tickets.js                 ← /api/tickets
+│       ├── documents.js               ← /api/documents
+│       ├── messages.js                ← /api/messages
+│       ├── timeline.js                ← /api/timeline
+│       ├── engagement.js              ← /api/engagement
+│       ├── analytics.js               ← /api/analytics
+│       ├── ai.js                      ← /api/ai
+│       ├── knowledge.js               ← /api/knowledge
+│       ├── integrations.js            ← /api/integrations
+│       ├── notifications.js           ← /api/notifications  (queue producer)
+│       ├── reports.js                 ← /api/reports        (queue producer)
+│       ├── sa-auth.js                 ← /api/sa-auth
+│       └── sa-org-admins.js           ← /api/sa-org-admins
+│
+└── queue-consumer/                    ← Standalone Cloudflare Worker (queue consumer)
+    ├── wrangler.toml                  ← Consumer Worker config (D1 + R2 bindings)
+    └── index.js                       ← Handles notification.created / payroll.run / report.generate
 ```
+
+---
+
+## Cloudflare Queue Integration
+
+WorkDesk uses **Cloudflare Queues** to offload background jobs from the request/response cycle.
+
+### How it works
+
+1. A Pages Function (producer) publishes a message to `WORKDESK_QUEUE` after accepting an API request.
+2. The standalone `queue-consumer` Worker picks up messages in batches and processes them asynchronously.
+
+### Queue Events
+
+| Event | Published by | Consumer action |
+|---|---|---|
+| `notification.created` | `POST /api/notifications` | INSERT into D1 `notifications` table |
+| `payroll.run` | `POST /api/payroll/run` | Compute pay, batch INSERT into `payroll_ledger` |
+| `report.generate` | `POST /api/reports` | Aggregate D1 data, serialize, upload to R2 |
+
+### Setup
+
+```bash
+# 1. Create the queue
+npx wrangler queues create workdesk-queue
+
+# 2. Deploy the Pages site (producer binding is already active in wrangler.toml)
+wrangler pages deploy .
+
+# 3. Configure and deploy the consumer Worker
+#    Edit queue-consumer/wrangler.toml with your database_id and bucket_name
+cd queue-consumer && wrangler deploy
+```
+
+### Status
+
+| Component | Status |
+|---|---|
+| Producer binding in wrangler.toml | ✅ Enabled |
+| Producer code in notifications.js | ✅ Complete |
+| Producer code in payroll.js | ✅ Complete |
+| Producer code in reports.js | ✅ Complete |
+| Consumer Worker (queue-consumer/) | ✅ Complete — deploy separately |
+
+> All producers guard the queue call with `if (env.WORKDESK_QUEUE)`, so the API works in demo
+> mode even when the queue is not yet configured.
 
 ---
 
@@ -389,35 +770,120 @@ npm install -g wrangler
 # Authenticate with Cloudflare
 wrangler login
 
-# Deploy to Cloudflare Pages
+# 1. Create D1 database
+wrangler d1 create workdesk-db
+# → Copy database_id into wrangler.toml [[d1_databases]]
+
+# 2. Apply schema
+wrangler d1 execute workdesk-db --file=./schema.sql
+
+# 3. Create KV namespace (session store)
+wrangler kv:namespace create "SESSIONS"
+# → Copy id into wrangler.toml [[kv_namespaces]]
+
+# 4. Create R2 bucket (file storage)
+wrangler r2 bucket create workdesk-attachments
+
+# 5. Create the queue
+npx wrangler queues create workdesk-queue
+
+# 6. Set secrets
+wrangler secret put OPENAI_API_KEY    # optional — for AI Assistant
+
+# 7. Deploy Pages site (includes queue producer binding)
 wrangler pages deploy .
+
+# 8. Deploy queue consumer Worker
+cd queue-consumer && wrangler deploy
 ```
 
-### Environment Variables (wrangler.toml)
+### Environment Variables
 
-```toml
-[vars]
+Uncomment and fill in `wrangler.toml` for non-sensitive config; use `wrangler secret put` for secrets:
+
+```bash
+# Non-sensitive (add to [vars] in wrangler.toml)
 ENVIRONMENT = "production"
 APP_NAME = "WorkDesk"
 ALLOWED_EMAIL_DOMAIN = "yourcompany.com"
+
+# Secrets (set via CLI — never commit)
+wrangler secret put OPENAI_API_KEY   # optional: external LLM for AI Assistant
 ```
 
 ---
 
 ## API Endpoints
 
-All API routes are handled by Cloudflare Workers in the `functions/api/` directory.
+All API routes are Cloudflare Pages Functions in `functions/api/`. Every response is `application/json`.
+All requests (except `POST /api/auth` and `POST /api/sa-auth`) require `Authorization: Bearer <token>`.
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/auth` | Login — validates credentials, returns session token |
+| POST | `/api/auth` | Sign in — returns session token |
+| GET | `/api/auth` | Verify session token |
 | GET | `/api/employees` | List all employees |
-| POST | `/api/employees` | Create or update an employee record |
-| GET | `/api/attendance` | Get attendance records |
-| POST | `/api/attendance` | Log a clock-in or clock-out event |
+| POST | `/api/employees` | Create employee |
+| PUT | `/api/employees` | Update employee |
+| DELETE | `/api/employees?id=` | Delete employee |
+| GET | `/api/attendance` | List attendance records |
+| POST | `/api/attendance` | Manual attendance entry |
+| POST | `/api/attendance/clock-in` | Clock in |
+| POST | `/api/attendance/clock-out` | Clock out |
 | GET | `/api/leave` | List leave requests |
-| POST | `/api/leave` | Submit or update a leave request |
-| GET | `/api/payroll` | Get payroll records |
+| POST | `/api/leave` | File leave request |
+| POST | `/api/leave/approve` | Approve leave |
+| POST | `/api/leave/reject` | Reject leave |
+| GET | `/api/payroll` | List payroll ledger |
+| POST | `/api/payroll/run` | Run payroll for period (queued) |
+| GET | `/api/performance` | List performance reviews |
+| POST | `/api/performance` | Create review |
+| PUT | `/api/performance` | Update review |
+| GET | `/api/recruitment` | List postings / applicants |
+| POST | `/api/recruitment` | Create job posting |
+| PUT | `/api/recruitment` | Update posting / applicant |
+| DELETE | `/api/recruitment?id=` | Archive posting |
+| GET | `/api/tickets` | List tickets |
+| POST | `/api/tickets` | Create ticket |
+| PUT | `/api/tickets` | Update ticket status |
+| DELETE | `/api/tickets?id=` | Delete ticket |
+| GET | `/api/documents` | List documents |
+| POST | `/api/documents` | Create document record |
+| PUT | `/api/documents` | Update document metadata |
+| DELETE | `/api/documents?id=` | Delete document |
+| GET | `/api/messages` | List message threads |
+| POST | `/api/messages` | Send message |
+| DELETE | `/api/messages?id=` | Delete message |
+| GET | `/api/timeline` | List timeline posts |
+| POST | `/api/timeline` | Create post (leaders only) |
+| POST | `/api/timeline/react` | Toggle reaction |
+| POST | `/api/timeline/comments` | Add comment |
+| DELETE | `/api/timeline?id=` | Delete post |
+| GET | `/api/engagement` | List surveys / results |
+| POST | `/api/engagement` | Submit survey response |
+| POST | `/api/engagement/survey` | Create survey |
+| GET | `/api/analytics` | Get analytics data |
+| POST | `/api/ai` | AI chat prompt |
+| GET | `/api/ai/history` | AI conversation history |
+| GET | `/api/knowledge` | List knowledge articles |
+| POST | `/api/knowledge` | Create article |
+| PUT | `/api/knowledge` | Update article |
+| DELETE | `/api/knowledge?id=` | Delete article |
+| GET | `/api/integrations` | List integrations |
+| POST | `/api/integrations` | Enable integration |
+| PUT | `/api/integrations` | Update integration config |
+| DELETE | `/api/integrations?id=` | Disable integration |
+| GET | `/api/notifications` | List notifications for user |
+| POST | `/api/notifications` | Create notification (queued) |
+| PATCH | `/api/notifications?id=` | Mark notification as read |
+| DELETE | `/api/notifications?id=` | Delete notification |
+| GET | `/api/reports` | List recent reports |
+| POST | `/api/reports` | Generate report (queued) |
+| POST | `/api/sa-auth` | Super Admin login |
+| GET | `/api/sa-org-admins` | List org admins (SA only) |
+| POST | `/api/sa-org-admins` | Create org admin (SA only) |
+| PUT | `/api/sa-org-admins` | Update org admin (SA only) |
+| DELETE | `/api/sa-org-admins?id=` | Delete org admin (SA only) |
 
 ---
 

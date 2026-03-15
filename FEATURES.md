@@ -17,9 +17,10 @@
 5. [Button & Navigation Map](#5-button--navigation-map)
 6. [Authentication Flow](#6-authentication-flow)
 7. [Database Schema (D1)](#7-database-schema-d1)
-8. [Deployment Commands](#8-deployment-commands)
-9. [Best Practices & Rules](#9-best-practices--rules)
-10. [What NOT to Change](#10-what-not-to-change)
+8. [Cloudflare Queue Integration](#8-cloudflare-queue-integration)
+9. [Deployment Commands](#9-deployment-commands)
+10. [Best Practices & Rules](#10-best-practices--rules)
+11. [What NOT to Change](#11-what-not-to-change)
 
 ---
 
@@ -36,6 +37,7 @@
 | Session store   | Cloudflare KV (`SESSIONS` namespace)    |
 | File storage    | Cloudflare R2 (`ATTACHMENTS` bucket)    |
 | AI inference    | Cloudflare Workers AI (`env.AI`)        |
+| Background jobs | Cloudflare Queues (`WORKDESK_QUEUE`)    |
 | Build step      | **None** — zero-build static site       |
 | CSS framework   | Custom (CSS variables in `assets/css/styles.css`) |
 | JS framework    | **None** — plain ES6 IIFE modules       |
@@ -45,28 +47,30 @@
 
 ## 2. Page Inventory
 
-| File                  | Title              | Purpose                                     | Backend API(s)                  |
-|-----------------------|--------------------|---------------------------------------------|---------------------------------|
-| `index.html`          | Redirect           | Redirects to `login.html`                   | —                               |
-| `login.html`          | Sign In            | Authentication entry point                  | `POST /api/auth`                |
-| `dashboard.html`      | Dashboard          | Overview KPIs, announcements, quick actions | `GET /api/auth` (session verify)|
-| `employees.html`      | Employees          | Employee directory, add/edit/delete         | `/api/employees`                |
-| `attendance.html`     | Attendance         | Clock in/out, daily log, manual entry       | `/api/attendance`               |
-| `leave.html`          | Leave Management   | File / approve / reject leave requests      | `/api/leave`                    |
-| `payroll.html`        | Payroll            | Payroll ledger, run payroll                 | `/api/payroll`                  |
-| `performance.html`    | Performance        | Reviews, goals, KPI tracking                | `/api/performance`              |
-| `recruitment.html`    | Recruitment        | Job postings, applicant pipeline            | `/api/recruitment`              |
-| `tickets.html`        | Support Tickets    | Internal IT/HR help-desk tickets            | `/api/tickets`                  |
-| `documents.html`      | Documents          | Policy docs, contracts, file storage        | `/api/documents`                |
-| `projects.html`       | Projects           | Team projects and milestones (planned)      | —                               |
-| `messaging.html`      | Messaging          | Direct and group chat                       | `/api/messages`                 |
-| `timeline.html`       | Timeline           | Company-wide announcements feed             | `/api/timeline`                 |
-| `engagement.html`     | Engagement         | Pulse surveys, satisfaction scores          | `/api/engagement`               |
-| `analytics.html`      | Analytics          | HR metrics, charts, export reports          | `/api/analytics`                |
-| `ai-assistant.html`   | AI Assistant       | AI-powered HR Q&A chat interface            | `/api/ai`                       |
-| `knowledge.html`      | Knowledge Base     | Internal wiki / HR policy articles          | `/api/knowledge`                |
-| `integrations.html`   | Integrations       | Connect Slack, Zoom, Xero, etc.             | `/api/integrations`             |
-| `settings.html`       | Settings           | Profile, notifications, org config          | `POST /api/auth` (logout)       |
+| File                          | Title              | Purpose                                     | Backend API(s)                        |
+|-------------------------------|--------------------|---------------------------------------------|---------------------------------------|
+| `index.html`                  | Redirect           | Redirects to `login.html`                   | —                                     |
+| `login.html`                  | Sign In            | Authentication entry point                  | `POST /api/auth`                      |
+| `dashboard.html`              | Dashboard          | Overview KPIs, announcements, quick actions | `GET /api/auth` (session verify)      |
+| `employees.html`              | Employees          | Employee directory, add/edit/delete         | `/api/employees`                      |
+| `attendance.html`             | Attendance         | Clock in/out, daily log, manual entry       | `/api/attendance`                     |
+| `leave.html`                  | Leave Management   | File / approve / reject leave requests      | `/api/leave`                          |
+| `payroll.html`                | Payroll            | Payroll ledger, run payroll                 | `/api/payroll`                        |
+| `performance.html`            | Performance        | Reviews, goals, KPI tracking                | `/api/performance`                    |
+| `recruitment.html`            | Recruitment        | Job postings, applicant pipeline            | `/api/recruitment`                    |
+| `tickets.html`                | Support Tickets    | Internal IT/HR help-desk tickets            | `/api/tickets`                        |
+| `documents.html`              | Documents          | Policy docs, contracts, file storage        | `/api/documents`                      |
+| `projects.html`               | Projects           | Team projects and milestones (planned)      | —                                     |
+| `messaging.html`              | Messaging          | Direct and group chat                       | `/api/messages`                       |
+| `timeline.html`               | Timeline           | Company-wide announcements feed             | `/api/timeline`                       |
+| `engagement.html`             | Engagement         | Pulse surveys, satisfaction scores          | `/api/engagement`                     |
+| `analytics.html`              | Analytics          | HR metrics, charts, export reports          | `/api/analytics`, `/api/reports`      |
+| `ai-assistant.html`           | AI Assistant       | AI-powered HR Q&A chat interface            | `/api/ai`                             |
+| `knowledge.html`              | Knowledge Base     | Internal wiki / HR policy articles          | `/api/knowledge`                      |
+| `integrations.html`           | Integrations       | Connect Slack, Zoom, Xero, etc.             | `/api/integrations`                   |
+| `settings.html`               | Settings           | Profile, notifications, org config          | `/api/notifications`, `POST /api/auth`|
+| `super-admin/sa-portal.html`  | SA Login           | Super Admin sign-in                         | `POST /api/sa-auth`                   |
+| `super-admin/sa-dashboard.html`| SA Dashboard      | Manage organizations and org admins         | `/api/sa-org-admins`                  |
 
 ---
 
@@ -186,6 +190,30 @@
 - **No dedicated backend API** — uses `/api/auth` for session; profile updates should target
   `/api/employees` (update own record) in production.
 
+### 3.20 Notifications (`/api/notifications`)
+- **Purpose**: In-app notification delivery for leave approvals, payroll events, mentions, and alerts.
+- **Delivery**: When a notification is created via `POST /api/notifications`, the event is also
+  published to `WORKDESK_QUEUE` (if configured) so the queue consumer can persist it to D1.
+- **API**: `GET /api/notifications` (list for current user), `POST` (create),
+  `PATCH?id=N-X` (mark read), `DELETE?id=N-X` (delete).
+
+### 3.21 Reports (`/api/reports`)
+- **Purpose**: Generate and export HR reports across all modules for a selected date range.
+- **Report types**: `hr_summary`, `attendance`, `payroll`, `leave`, `performance`,
+  `recruitment`, `platform_usage`, `engagement`, `tickets`.
+- **Formats**: `json`, `csv`, `xlsx`.
+- **Queue integration**: `POST /api/reports` queues report generation via `WORKDESK_QUEUE`; the
+  consumer (`queue-consumer/index.js`) aggregates D1 data, serializes the output, and uploads
+  the file to R2.
+- **API**: `GET /api/reports` (list recent), `POST /api/reports` (generate new).
+
+### 3.22 Super Admin (`/super-admin/`)
+- **Purpose**: Platform-level administration — create, modify, and deactivate organizations;
+  assign Org Admins.
+- **Pages**: `super-admin/sa-portal.html` (login), `super-admin/sa-dashboard.html` (management).
+- **Auth**: SA tokens contain `:sa:` in the base64-decoded payload; all SA endpoints verify this.
+- **API**: `POST /api/sa-auth` (SA login), `GET/POST/PUT/DELETE /api/sa-org-admins` (Org Admin CRUD).
+
 ---
 
 ## 4. Backend API Reference
@@ -248,6 +276,17 @@ in `/functions/api/*.js`. All responses use `Content-Type: application/json`.
 | POST   | `/api/integrations`          | `functions/api/integrations.js`    | Enable integration               |
 | PUT    | `/api/integrations`          | `functions/api/integrations.js`    | Update integration               |
 | DELETE | `/api/integrations?id=`      | `functions/api/integrations.js`    | Disable integration              |
+| GET    | `/api/notifications`         | `functions/api/notifications.js`   | List notifications               |
+| POST   | `/api/notifications`         | `functions/api/notifications.js`   | Create notification              |
+| PATCH  | `/api/notifications?id=`     | `functions/api/notifications.js`   | Mark notification as read        |
+| DELETE | `/api/notifications?id=`     | `functions/api/notifications.js`   | Delete notification              |
+| GET    | `/api/reports`               | `functions/api/reports.js`         | List recent reports              |
+| POST   | `/api/reports`               | `functions/api/reports.js`         | Generate report (queued)         |
+| POST   | `/api/sa-auth`               | `functions/api/sa-auth.js`         | Super Admin login                |
+| GET    | `/api/sa-org-admins`         | `functions/api/sa-org-admins.js`   | List org admins (SA only)        |
+| POST   | `/api/sa-org-admins`         | `functions/api/sa-org-admins.js`   | Create org admin (SA only)       |
+| PUT    | `/api/sa-org-admins`         | `functions/api/sa-org-admins.js`   | Update org admin (SA only)       |
+| DELETE | `/api/sa-org-admins?id=`     | `functions/api/sa-org-admins.js`   | Delete org admin (SA only)       |
 
 ### Authentication Headers
 
@@ -556,11 +595,154 @@ CREATE TABLE IF NOT EXISTS integrations (
   status       TEXT DEFAULT 'active',
   connected_at TEXT
 );
+
+-- Notifications
+CREATE TABLE IF NOT EXISTS notifications (
+  id         TEXT PRIMARY KEY,
+  user_token TEXT NOT NULL,
+  type       TEXT NOT NULL,
+  text       TEXT NOT NULL,
+  href       TEXT DEFAULT '#',
+  unread     INTEGER DEFAULT 1,
+  created_at TEXT NOT NULL
+);
+
+-- Reports (metadata log for generated reports)
+CREATE TABLE IF NOT EXISTS reports (
+  id           TEXT PRIMARY KEY,
+  name         TEXT NOT NULL,
+  type         TEXT NOT NULL,
+  format       TEXT NOT NULL,
+  org_id       TEXT,
+  date_from    TEXT,
+  date_to      TEXT,
+  r2_key       TEXT,
+  rows         INTEGER DEFAULT 0,
+  status       TEXT DEFAULT 'ready',
+  generated_at TEXT NOT NULL
+);
 ```
 
 ---
 
-## 8. Deployment Commands
+## 8. Cloudflare Queue Integration
+
+WorkDesk uses **Cloudflare Queues** to offload long-running background jobs away from
+the request path. This keeps API responses fast and ensures heavy work (payroll computation,
+report generation) is retried safely if it fails.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│  Cloudflare Pages (static site + Functions)  │
+│                                              │
+│  POST /api/payroll/run ──┐                   │
+│  POST /api/reports      ─┼──► WORKDESK_QUEUE │
+│  POST /api/notifications ┘        (Queue)    │
+└─────────────────────────────────────────────┘
+                                │
+                       batch delivery
+                                │
+                                ▼
+              ┌──────────────────────────────────┐
+              │  queue-consumer/index.js (Worker)  │
+              │                                    │
+              │  notification.created → D1 INSERT  │
+              │  payroll.run          → D1 batch    │
+              │  report.generate      → D1 + R2    │
+              └──────────────────────────────────┘
+```
+
+### Queue Events
+
+| Event                | Published by                   | Consumer action                                     |
+|----------------------|--------------------------------|-----------------------------------------------------|
+| `notification.created` | `POST /api/notifications`    | INSERT row into D1 `notifications` table            |
+| `payroll.run`          | `POST /api/payroll/run`      | Compute pay, batch INSERT into `payroll_ledger`     |
+| `report.generate`      | `POST /api/reports`          | Aggregate D1 data, serialize, upload to R2          |
+
+### File Layout
+
+```
+queue-consumer/
+├── wrangler.toml   — Worker config (consumers + D1/R2 bindings)
+└── index.js        — Queue handler (export default { queue() {} })
+```
+
+### Setup Checklist
+
+```bash
+# 1. Create the queue (once per environment)
+npx wrangler queues create workdesk-queue
+
+# 2. Deploy the Pages project (producer)
+#    The [[queues.producers]] block in the root wrangler.toml is already active.
+wrangler pages deploy .
+
+# 3. Fill in wrangler.toml inside queue-consumer/:
+#      - database_id  (from:  wrangler d1 create workdesk-db)
+#      - bucket_name  (from:  wrangler r2 bucket create workdesk-attachments)
+
+# 4. Deploy the consumer Worker
+cd queue-consumer
+wrangler deploy
+```
+
+### Producer Code Pattern
+
+Each Pages Function that publishes to the queue guards the call with `if (env.WORKDESK_QUEUE)`,
+so the API continues to work (in demo mode) when the queue is not yet configured:
+
+```js
+if (env.WORKDESK_QUEUE) {
+  await env.WORKDESK_QUEUE.send({ event: 'payroll.run', period, count, token, queued_at });
+}
+```
+
+### Consumer Code Pattern
+
+The consumer (`queue-consumer/index.js`) exports a single default object with a `queue` handler:
+
+```js
+export default {
+  async queue(batch, env) {
+    for (const message of batch.messages) {
+      try {
+        await handleMessage(message.body, env);
+        message.ack();
+      } catch (err) {
+        message.retry();
+      }
+    }
+  },
+};
+```
+
+### D1 — Additional `reports` Table
+
+The report consumer logs metadata to a `reports` table. Add it to your schema if you are using
+the report generator:
+
+```sql
+CREATE TABLE IF NOT EXISTS reports (
+  id           TEXT PRIMARY KEY,
+  name         TEXT NOT NULL,
+  type         TEXT NOT NULL,
+  format       TEXT NOT NULL,
+  org_id       TEXT,
+  date_from    TEXT,
+  date_to      TEXT,
+  r2_key       TEXT,
+  rows         INTEGER DEFAULT 0,
+  status       TEXT DEFAULT 'ready',
+  generated_at TEXT NOT NULL
+);
+```
+
+---
+
+## 9. Deployment Commands
 
 ### First-time setup
 
@@ -579,11 +761,17 @@ wrangler kv:namespace create "SESSIONS"
 # 4. Create R2 bucket (for file attachments)
 wrangler r2 bucket create workdesk-attachments
 
-# 5. Set secrets (do NOT commit these)
+# 5. Create the Cloudflare Queue
+npx wrangler queues create workdesk-queue
+
+# 6. Set secrets (do NOT commit these)
 wrangler secret put OPENAI_API_KEY    # optional, for AI Assistant
 
-# 6. Deploy
+# 7. Deploy Pages (producer)
 wrangler pages deploy .
+
+# 8. Deploy the queue consumer Worker
+cd queue-consumer && wrangler deploy
 ```
 
 ### Day-to-day
@@ -607,7 +795,7 @@ wrangler d1 execute workdesk-db --command="SELECT COUNT(*) FROM employees"
 
 ---
 
-## 9. Best Practices & Rules
+## 10. Best Practices & Rules
 
 ### Code style
 - **Zero-build**: No npm, no bundler, no transpilation. All JS must run natively in the browser.
@@ -648,7 +836,7 @@ wrangler d1 execute workdesk-db --command="SELECT COUNT(*) FROM employees"
 
 ---
 
-## 10. What NOT to Change
+## 11. What NOT to Change
 
 > These rules prevent accidental regressions and unnecessary churn.
 
