@@ -275,6 +275,43 @@ img {
   opacity: 1;
 }
 
+/* ── Nav info icon (ⓘ branding tooltip) ─────── */
+.nav-info-icon {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-left: 4px;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-info-icon::after {
+  content: attr(data-term);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--text-main);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 200;
+}
+
+.sidebar:hover .nav-info-icon:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
 .sidebar-footer {
   border-top: 1px solid var(--border-light);
   padding-top: 14px;
