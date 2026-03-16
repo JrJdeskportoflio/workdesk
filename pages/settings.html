@@ -171,6 +171,10 @@
               <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               Platform Settings
             </div>
+            <div class="settings-nav-item" data-panel="finance">
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Finance &amp; Payroll
+            </div>
           </nav>
 
           <!-- Settings Panels -->
@@ -701,6 +705,104 @@
               <button class="btn btn-primary mt-16" id="savePlatformBtn">Save Platform Settings</button>
             </div>
 
+            <!-- ── FINANCE & PAYROLL ── -->
+            <div class="settings-panel card" id="panel-finance">
+              <div class="settings-section-title">Finance &amp; Payroll Settings</div>
+              <div class="settings-section-desc">
+                Configure payroll computation rules, tax rates, statutory deductions, and currency. Only Finance Managers and Organization Admins can modify these settings. All changes are logged in the payroll audit trail.
+              </div>
+
+              <div class="notice" style="background:#FEF3C7;border-left:4px solid var(--warning);margin-bottom:24px;">
+                <div class="notice-title">⚠️ Finance Manager Access</div>
+                Changes to these settings affect all future payroll computations and will be reflected in payslips immediately. Modifications are permanently logged.
+              </div>
+
+              <div class="notice info mb-16" style="background:#EFF6FF;border-left:4px solid #3B82F6;">
+                <div class="notice-title">ℹ️ Country Preset Rates</div>
+                These presets use simplified representative tax rates for quick setup. They do not account for progressive tax brackets or employer portions. Always verify with a qualified accountant before use in production payroll.
+              </div>
+
+              <!-- Country / Region -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Country / Region</div>
+                  <div class="settings-row-desc">Applies standard statutory deduction presets for the selected country.</div>
+                </div>
+                <select class="form-input" style="width:220px;" id="finCountry">
+                  <option value="PH">🇵🇭 Philippines</option>
+                  <option value="SG">🇸🇬 Singapore</option>
+                  <option value="US">🇺🇸 United States</option>
+                  <option value="GB">🇬🇧 United Kingdom</option>
+                  <option value="AU">🇦🇺 Australia</option>
+                  <option value="MY">🇲🇾 Malaysia</option>
+                  <option value="ID">🇮🇩 Indonesia</option>
+                  <option value="Custom">🌐 Custom</option>
+                </select>
+              </div>
+
+              <!-- Currency -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Payroll Currency</div>
+                  <div class="settings-row-desc">Default currency symbol used on payslips and payroll reports.</div>
+                </div>
+                <select class="form-input" style="width:160px;" id="finCurrency">
+                  <option value="PHP">₱ PHP — Philippine Peso</option>
+                  <option value="SGD">S$ SGD — Singapore Dollar</option>
+                  <option value="USD">$ USD — US Dollar</option>
+                  <option value="EUR">€ EUR — Euro</option>
+                  <option value="GBP">£ GBP — British Pound</option>
+                  <option value="AUD">A$ AUD — Australian Dollar</option>
+                  <option value="MYR">RM MYR — Malaysian Ringgit</option>
+                  <option value="IDR">Rp IDR — Indonesian Rupiah</option>
+                </select>
+              </div>
+
+              <!-- Income / Withholding Tax Rate -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Income / Withholding Tax Rate (%)</div>
+                  <div class="settings-row-desc">Default withholding tax percentage applied on taxable income. Used when computing payslip deductions.</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="number" class="form-input" style="width:90px;" id="finTaxRate" min="0" max="100" step="0.1" value="10" />
+                  <span style="font-size:13px;color:var(--text-muted);">%</span>
+                </div>
+              </div>
+
+              <!-- VAT Rate -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">VAT / Sales Tax Rate (%)</div>
+                  <div class="settings-row-desc">Value-Added Tax rate for financial reporting, invoices, and tax computation.</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="number" class="form-input" style="width:90px;" id="finVatRate" min="0" max="100" step="0.1" value="12" />
+                  <span style="font-size:13px;color:var(--text-muted);">%</span>
+                </div>
+              </div>
+
+              <hr class="section-divider" />
+
+              <!-- Statutory Deductions -->
+              <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Statutory Deductions</div>
+              <div class="text-sm text-muted mb-16">Configure mandatory government-mandated deductions. Rate is applied as a percentage of basic pay unless marked as Fixed Amount. Changes here automatically update payslip computations.</div>
+
+              <div id="finDeductionsTable" style="margin-bottom:16px;"></div>
+
+              <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+                <button class="btn btn-soft btn-sm" id="addFinDeductionBtn">+ Add Custom Deduction</button>
+                <button class="btn btn-soft btn-sm" id="applyCountryPresetBtn">↺ Apply Country Preset</button>
+              </div>
+
+              <div class="notice info mb-16" id="finPresetInfo" style="display:none;">
+                <div class="notice-title">ℹ️ Country Preset Applied</div>
+                <span id="finPresetInfoText"></span>
+              </div>
+
+              <button class="btn btn-primary" id="saveFinanceBtn">Save Finance Settings</button>
+            </div>
+
           </div><!-- end settingsPanels -->
 
         </div><!-- end settings-layout -->
@@ -897,6 +999,165 @@
       existing.style.transform = 'translateY(12px)';
     }, 3000);
   }
+
+  // ── Finance & Payroll Settings ───────────────────────────
+  var CURRENCY_SYMBOLS = {PHP:'₱',SGD:'S$',USD:'$',EUR:'€',GBP:'£',AUD:'A$',MYR:'RM',IDR:'Rp'};
+  var COUNTRY_PRESETS = {
+    PH:{taxRate:10,vatRate:12,currency:'PHP',deductions:[
+      {name:'SSS',rate:4.5,fixed:false},{name:'PhilHealth',rate:1.5,fixed:false},{name:'Pag-IBIG',rate:0,fixed:true,fixedAmt:100}]},
+    SG:{taxRate:22,vatRate:9,currency:'SGD',deductions:[
+      {name:'CPF (Employee)',rate:20,fixed:false}]},
+    US:{taxRate:22,vatRate:0,currency:'USD',deductions:[
+      {name:'Social Security',rate:6.2,fixed:false},{name:'Medicare',rate:1.45,fixed:false}]},
+    GB:{taxRate:20,vatRate:20,currency:'GBP',deductions:[
+      {name:'National Insurance',rate:12,fixed:false}]},
+    AU:{taxRate:32.5,vatRate:10,currency:'AUD',deductions:[
+      {name:'Superannuation',rate:11,fixed:false}]},
+    MY:{taxRate:24,vatRate:6,currency:'MYR',deductions:[
+      {name:'EPF',rate:9,fixed:false},{name:'SOCSO',rate:0.5,fixed:false}]},
+    ID:{taxRate:15,vatRate:11,currency:'IDR',deductions:[
+      {name:'BPJS Health',rate:1,fixed:false},{name:'BPJS Employment',rate:2,fixed:false}]}
+  };
+  var DEFAULT_FIN = {currency:'PHP',currencySymbol:'₱',taxRate:10,vatRate:12,country:'PH',deductions:[
+    {name:'SSS',rate:4.5,fixed:false},{name:'PhilHealth',rate:1.5,fixed:false},{name:'Pag-IBIG',rate:0,fixed:true,fixedAmt:100}]};
+  var finDeductions = [];
+
+  function loadFinanceSettings(){
+    try{
+      var saved = JSON.parse(localStorage.getItem('workdesk_finance_settings')||'null')||DEFAULT_FIN;
+      var countryEl = document.getElementById('finCountry');
+      var currencyEl = document.getElementById('finCurrency');
+      var taxEl = document.getElementById('finTaxRate');
+      var vatEl = document.getElementById('finVatRate');
+      if(countryEl) countryEl.value = saved.country||'PH';
+      if(currencyEl) currencyEl.value = saved.currency||'PHP';
+      if(taxEl) taxEl.value = saved.taxRate||10;
+      if(vatEl) vatEl.value = saved.vatRate||12;
+      finDeductions = JSON.parse(JSON.stringify(saved.deductions||DEFAULT_FIN.deductions));
+      renderFinDeductions();
+    }catch(e){}
+  }
+
+  function renderFinDeductions(){
+    var table = document.getElementById('finDeductionsTable'); if(!table) return;
+    if(finDeductions.length===0){
+      table.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No deductions configured. Click "+ Add Custom Deduction" to add one.</div>';
+      return;
+    }
+    table.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px;">'+
+      '<thead><tr style="background:var(--bg-main);">'+
+        '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border-light);">Name</th>'+
+        '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border-light);">Type</th>'+
+        '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border-light);">Rate / Amount</th>'+
+        '<th style="padding:8px 12px;border-bottom:1px solid var(--border-light);"></th>'+
+      '</tr></thead><tbody>'+
+      finDeductions.map(function(d,i){
+        return '<tr>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid var(--border-light);">'+
+            '<input type="text" value="'+escHtmlSettings(d.name)+'" data-di="'+i+'" data-field="name" style="padding:5px 8px;border:1px solid var(--border-light);border-radius:4px;font-family:var(--font-primary);font-size:13px;width:140px;" /></td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid var(--border-light);">'+
+            '<select data-di="'+i+'" data-field="fixed" style="padding:5px 8px;border:1px solid var(--border-light);border-radius:4px;font-family:var(--font-primary);font-size:13px;">'+
+              '<option value="0"'+(d.fixed?'':' selected')+'>% of Basic Pay</option>'+
+              '<option value="1"'+(d.fixed?' selected':'')+'>Fixed Amount</option>'+
+            '</select></td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid var(--border-light);">'+
+            '<input type="number" min="0" step="0.01" value="'+(d.fixed?(d.fixedAmt||0):d.rate)+'" data-di="'+i+'" data-field="value" style="padding:5px 8px;border:1px solid var(--border-light);border-radius:4px;font-family:var(--font-primary);font-size:13px;width:90px;" />'+
+            '<span style="margin-left:4px;font-size:12px;color:var(--text-muted);">'+(d.fixed?'(fixed)':'%')+'</span></td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid var(--border-light);">'+
+            '<button class="btn btn-soft btn-sm fin-remove-ded" data-di="'+i+'" style="color:var(--danger);">Remove</button></td>'+
+        '</tr>';
+      }).join('')+
+      '</tbody></table>';
+    table.querySelectorAll('[data-di]').forEach(function(el){
+      el.addEventListener('change',function(){
+        var i=parseInt(el.dataset.di); var field=el.dataset.field;
+        if(field==='name') finDeductions[i].name=el.value;
+        else if(field==='fixed'){
+          finDeductions[i].fixed=el.value==='1';
+          if(finDeductions[i].fixed){finDeductions[i].fixedAmt=finDeductions[i].rate||0;finDeductions[i].rate=0;}
+          else{finDeductions[i].rate=finDeductions[i].fixedAmt||0;finDeductions[i].fixedAmt=0;}
+          renderFinDeductions();
+        }else if(field==='value'){
+          if(finDeductions[i].fixed) finDeductions[i].fixedAmt=parseFloat(el.value)||0;
+          else finDeductions[i].rate=parseFloat(el.value)||0;
+        }
+      });
+    });
+    table.querySelectorAll('.fin-remove-ded').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        finDeductions.splice(parseInt(btn.dataset.di),1);
+        renderFinDeductions();
+      });
+    });
+  }
+
+  function escHtmlSettings(s){
+    if(!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  var addFinDeductionBtn = document.getElementById('addFinDeductionBtn');
+  if(addFinDeductionBtn){
+    addFinDeductionBtn.addEventListener('click',function(){
+      finDeductions.push({name:'Custom Deduction',rate:0,fixed:false});
+      renderFinDeductions();
+    });
+  }
+
+  var applyCountryPresetBtn = document.getElementById('applyCountryPresetBtn');
+  if(applyCountryPresetBtn){
+    applyCountryPresetBtn.addEventListener('click',function(){
+      var countryEl=document.getElementById('finCountry'); if(!countryEl) return;
+      var country=countryEl.value;
+      var preset=COUNTRY_PRESETS[country];
+      if(!preset){showToast('No preset available for "'+country+'". Configure manually.');return;}
+      var taxEl=document.getElementById('finTaxRate');
+      var vatEl=document.getElementById('finVatRate');
+      var currEl=document.getElementById('finCurrency');
+      if(taxEl) taxEl.value=preset.taxRate;
+      if(vatEl) vatEl.value=preset.vatRate;
+      if(currEl) currEl.value=preset.currency;
+      finDeductions=JSON.parse(JSON.stringify(preset.deductions));
+      renderFinDeductions();
+      var info=document.getElementById('finPresetInfo');
+      var infoText=document.getElementById('finPresetInfoText');
+      if(info&&infoText){
+        infoText.textContent='Applied preset for country code "'+country+'": '+preset.deductions.map(function(d){return d.name+'='+(d.fixed?(d.fixedAmt||0)+' fixed':d.rate+'%');}).join(', ')+'. Tax: '+preset.taxRate+'%, VAT: '+preset.vatRate+'%.';
+        info.style.display='';
+      }
+      showToast('Country preset applied. Click "Save Finance Settings" to confirm.');
+    });
+  }
+
+  var saveFinanceBtn = document.getElementById('saveFinanceBtn');
+  if(saveFinanceBtn){
+    saveFinanceBtn.addEventListener('click',function(){
+      var taxEl=document.getElementById('finTaxRate');
+      var vatEl=document.getElementById('finVatRate');
+      var countryEl=document.getElementById('finCountry');
+      var currEl=document.getElementById('finCurrency');
+      var taxRate=parseFloat((taxEl&&taxEl.value)||10);
+      var vatRate=parseFloat((vatEl&&vatEl.value)||12);
+      var country=(countryEl&&countryEl.value)||'PH';
+      var currency=(currEl&&currEl.value)||'PHP';
+      var currencySymbol=CURRENCY_SYMBOLS[currency]||currency;
+      WDConfirm.show({
+        title:'Save Finance Settings',
+        message:'Save these finance & payroll settings? All future payslips and payroll computations will use the new rates and deductions.',
+        type:'warn',confirmText:'Yes, Save',cancelText:'No',
+        onConfirm:function(){
+          var settings={currency:currency,currencySymbol:currencySymbol,taxRate:taxRate,vatRate:vatRate,country:country,deductions:JSON.parse(JSON.stringify(finDeductions))};
+          localStorage.setItem('workdesk_finance_settings',JSON.stringify(settings));
+          showToast('Finance & payroll settings saved.');
+          var info=document.getElementById('finPresetInfo'); if(info) info.style.display='none';
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    loadFinanceSettings();
+  });
 
   document.addEventListener('DOMContentLoaded', function(){
     loadProfile();
