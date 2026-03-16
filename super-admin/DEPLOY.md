@@ -64,6 +64,22 @@ wrangler secret put SA_PASSWORD     --project-name workdesk-super-admin
 
 You will be prompted to enter each value interactively. Choose strong, unique values for all three.
 
+> **⚠ Two-project reminder:** The main WorkDesk app (`workdesk-worker`) is a **separate** Cloudflare project and needs the **same three secrets** set independently. If you have already deployed the main app, run the equivalent commands for it too:
+>
+> ```bash
+> wrangler secret put SA_USERNAME     --name workdesk-worker
+> wrangler secret put SA_SECURITY_KEY --name workdesk-worker
+> wrangler secret put SA_PASSWORD     --name workdesk-worker
+> ```
+>
+> Use **identical values** for both projects. Tokens issued by this SA Panel are validated by `/api/sa-org-admins` on the main app using its own copy of `SA_USERNAME`.
+>
+> Verify both are set:
+> ```bash
+> wrangler secret list --project-name workdesk-super-admin  # this project
+> wrangler secret list --name workdesk-worker               # main app
+> ```
+
 ### Step 3 — Verify the deployment
 
 Open the URL printed in Step 1 in your browser. You should see the **WorkDesk Secure Access** login page. Use the credentials you set in Step 2 to log in.
@@ -178,7 +194,8 @@ The main WorkDesk `_redirects` file already contains rules that redirect any req
 
 Before going live, ensure:
 
-- [ ] `SA_USERNAME`, `SA_SECURITY_KEY`, and `SA_PASSWORD` are all set as **encrypted** environment variables in Cloudflare Pages — never hardcoded in any file.
+- [ ] `SA_USERNAME`, `SA_SECURITY_KEY`, and `SA_PASSWORD` are all set as **encrypted** environment variables on **this project** (`workdesk-super-admin`) — never hardcoded in any file.
+- [ ] The same three secrets are also set on the **main app** project (`workdesk-worker`). Run `wrangler secret list --name workdesk-worker` to confirm.
 - [ ] The deployment URL is kept private (not linked from the main app or any public page).
 - [ ] The `_headers` file in this folder is deployed alongside the HTML files (Cloudflare Pages picks it up automatically).
 - [ ] Access logs are reviewed periodically in the Cloudflare Pages Functions log stream.
@@ -189,7 +206,7 @@ Before going live, ensure:
 ## Troubleshooting
 
 **Login page shows but authentication fails**
-→ Make sure all three environment variables (`SA_USERNAME`, `SA_SECURITY_KEY`, `SA_PASSWORD`) are set in Cloudflare Pages → Settings → Environment variables and that you redeployed after adding them.
+→ Make sure all three environment variables (`SA_USERNAME`, `SA_SECURITY_KEY`, `SA_PASSWORD`) are set **on this project** (`workdesk-super-admin`) in Cloudflare Pages → Settings → Environment variables and that you redeployed after adding them. Setting them only on the main app (`workdesk-worker`) is a common mistake — each project stores its own secrets independently.
 
 **Background image is missing on the login page**
 → Ensure `Baground theme login page .png` is present in the `super-admin/` folder. Cloudflare Pages will serve it alongside the HTML files.

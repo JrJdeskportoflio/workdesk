@@ -35,8 +35,8 @@ Cloudflare will print the worker URL (e.g. `https://workdesk-worker.<account>.wo
 
 ## Step 2 — Set the Super-Admin Secrets
 
-The worker needs three secrets to authenticate Super-Admin login requests at
-`POST /api/sa-auth`. **Never put real credentials in any file** — always set them
+The worker needs three secrets to validate Super-Admin session tokens at
+`/api/sa-org-admins`. **Never put real credentials in any file** — always set them
 via the CLI so they are stored encrypted in Cloudflare's vault.
 
 Run each command below and enter the value when prompted:
@@ -55,6 +55,20 @@ wrangler secret put SA_PASSWORD     --name workdesk-worker
 
 Choose strong, unique values for all three. The worker validates all three
 simultaneously on every login attempt.
+
+> **⚠ Two-project reminder:** The Super Admin Panel (`workdesk-super-admin`, in the
+> `super-admin/` folder) is a **separate** Cloudflare project. It also needs the
+> **same three secrets** set independently via:
+>
+> ```bash
+> wrangler secret put SA_USERNAME     --project-name workdesk-super-admin
+> wrangler secret put SA_SECURITY_KEY --project-name workdesk-super-admin
+> wrangler secret put SA_PASSWORD     --project-name workdesk-super-admin
+> ```
+>
+> Use **identical values** for both projects. The SA login (`/api/sa-auth`) runs inside
+> the super-admin project and reads its own secrets — setting them only here will
+> cause the SA login page to return "Super admin access is not configured."
 
 ---
 

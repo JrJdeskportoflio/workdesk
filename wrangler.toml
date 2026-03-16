@@ -142,6 +142,17 @@ not_found_handling = "single-page-application"
 #   wrangler secret put SA_SECURITY_KEY --name workdesk-worker
 #   wrangler secret put SA_PASSWORD     --name workdesk-worker
 #
+# ⚠ IMPORTANT — TWO PROJECTS, SAME SECRETS:
+# This is the main app (workdesk-worker). The Super Admin Panel is a SEPARATE
+# Cloudflare project (workdesk-super-admin, see super-admin/wrangler.toml).
+# The three SA secrets MUST also be set on that project with identical values.
+# Setting them only here will cause SA login to fail on the Super Admin Panel.
+#
+# Super-admin project commands (run these too if not done already):
+#   wrangler secret put SA_USERNAME     --project-name workdesk-super-admin
+#   wrangler secret put SA_SECURITY_KEY --project-name workdesk-super-admin
+#   wrangler secret put SA_PASSWORD     --project-name workdesk-super-admin
+#
 # Note: /api/sa-auth lives in the separate super-admin/ project, not here.
 # To verify all three are set:   wrangler secret list --name workdesk-worker
 # To re-add a deleted secret:    re-run the matching command above
