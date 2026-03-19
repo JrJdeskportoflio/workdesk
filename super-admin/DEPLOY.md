@@ -1,6 +1,6 @@
 # WorkDesk Super Admin — Deployment Guide
 
-The Super Admin Panel (`sa-portal.html` and `sa-dashboard.html`) is deployed as part of the **main WorkDesk Cloudflare Pages project** (`workdesk-worker`). There is no separate project — everything lives under one deployment.
+The Super Admin Panel (`sa-portal.html` and `sa-dashboard.html`) is deployed as part of the **main WorkDesk Cloudflare Pages project** (`superadminaccess`). There is no separate project — everything lives under one deployment.
 
 ---
 
@@ -8,8 +8,8 @@ The Super Admin Panel (`sa-portal.html` and `sa-dashboard.html`) is deployed as 
 
 Once deployed, the Super Admin Panel is accessible at:
 
-- `https://<your-domain>/sa-portal.html` — Login portal
-- `https://<your-domain>/sa-dashboard.html` — Management dashboard
+- `https://<your-domain>/super-admin/sa-portal.html` — Login portal
+- `https://<your-domain>/super-admin/sa-dashboard.html` — Management dashboard
 
 > **Tip:** Keep these URLs private. They are not linked from any employee-facing page and include `noindex` meta tags to prevent search engine indexing.
 
@@ -21,8 +21,8 @@ From the **root** of the WorkDesk repository:
 
 ```bash
 wrangler pages deploy . \
-  --project-name workdesk-worker \
-  --compatibility-date 2024-01-01
+  --project-name superadminaccess \
+  --compatibility-date 2025-09-27
 ```
 
 ---
@@ -32,9 +32,9 @@ wrangler pages deploy . \
 The Super Admin login (`POST /api/sa-auth`) reads three secrets from the Cloudflare environment. **Never commit real credentials to source control.** Set them via the CLI:
 
 ```bash
-wrangler secret put SA_USERNAME     --name workdesk-worker
-wrangler secret put SA_SECURITY_KEY --name workdesk-worker
-wrangler secret put SA_PASSWORD     --name workdesk-worker
+wrangler secret put SA_USERNAME     --name superadminaccess
+wrangler secret put SA_SECURITY_KEY --name superadminaccess
+wrangler secret put SA_PASSWORD     --name superadminaccess
 ```
 
 You will be prompted to enter each value interactively. Choose strong, unique values for all three.
@@ -42,7 +42,7 @@ You will be prompted to enter each value interactively. Choose strong, unique va
 Verify all three are set:
 
 ```bash
-wrangler secret list --name workdesk-worker
+wrangler secret list --name superadminaccess
 # Expected output lists SA_USERNAME, SA_SECURITY_KEY, SA_PASSWORD
 ```
 
@@ -51,8 +51,20 @@ wrangler secret list --name workdesk-worker
 ## Subsequent Deploys
 
 ```bash
-wrangler pages deploy . --project-name workdesk-worker
+wrangler pages deploy . --project-name superadminaccess
 ```
+
+---
+
+## After a Cloudflare Project Reset
+
+> **Important:** Resetting a Cloudflare Pages project wipes all encrypted secrets (environment variables). The SA login endpoint will return **"Super admin access is not configured"** (HTTP 503) until the secrets are re-added.
+
+Steps to restore after a reset:
+
+1. Re-add all three secrets (see "Setting the Required Secrets" above).
+2. Redeploy the project so the new environment variables take effect.
+3. Verify with: `wrangler secret list --name superadminaccess`
 
 ---
 
@@ -68,14 +80,14 @@ wrangler kv:namespace create "SA_SESSIONS"
 
 Copy the `id` value from the output.
 
-### Step 2 — Uncomment the KV binding in `wrangler.toml`
+### Step 2 — Add the KV binding in `wrangler.jsonc`
 
-Open the root `wrangler.toml` and replace the commented-out section with your real namespace ID:
+Open the root `wrangler.jsonc` and add:
 
-```toml
-[[kv_namespaces]]
-binding = "SA_SESSIONS"
-id     = "YOUR_SA_SESSIONS_KV_ID"
+```jsonc
+"kv_namespaces": [
+  { "binding": "SA_SESSIONS", "id": "YOUR_SA_SESSIONS_KV_ID" }
+]
 ```
 
 ### Step 3 — Enable server-side verification in `functions/api/sa-auth.js`
@@ -85,7 +97,7 @@ In `sa-auth.js`, uncomment the two TODO blocks that read from and write to `env.
 ### Step 4 — Redeploy
 
 ```bash
-wrangler pages deploy . --project-name workdesk-worker
+wrangler pages deploy . --project-name superadminaccess
 ```
 
 ---
@@ -94,7 +106,7 @@ wrangler pages deploy . --project-name workdesk-worker
 
 Before going live, ensure:
 
-- [ ] `SA_USERNAME`, `SA_SECURITY_KEY`, and `SA_PASSWORD` are all set as **encrypted** environment variables on `workdesk-worker` — never hardcoded in any file.
+- [ ] `SA_USERNAME`, `SA_SECURITY_KEY`, and `SA_PASSWORD` are all set as **encrypted** environment variables on `superadminaccess` — never hardcoded in any file.
 - [ ] The SA portal URL is kept private (not linked from the main app or any public page).
 - [ ] The `_headers` file at the repo root is deployed alongside the HTML files (Cloudflare Pages picks it up automatically).
 - [ ] Access logs are reviewed periodically in the Cloudflare Pages Functions log stream.
@@ -104,7 +116,10 @@ Before going live, ensure:
 
 ## Troubleshooting
 
-**Login page shows but authentication fails**
+**Login shows "Super admin access is not configured" (HTTP 503)**
+→ The three required secrets (`SA_USERNAME`, `SA_SECURITY_KEY`, `SA_PASSWORD`) are missing from the Cloudflare Pages environment. Re-add them via the CLI (see "Setting the Required Secrets" above) and redeploy. This commonly happens after a Cloudflare project reset.
+
+**Login page shows but authentication fails with "Invalid credentials"**
 → Make sure all three environment variables (`SA_USERNAME`, `SA_SECURITY_KEY`, `SA_PASSWORD`) are set in Cloudflare Pages → Settings → Environment variables and that you redeployed after adding them.
 
 **Background image is missing on the login page**

@@ -138,10 +138,10 @@ not_found_handling = "single-page-application"
 #
 # Super-Admin secrets (required for /api/sa-auth and /api/sa-org-admins).
 # Run these commands and enter each value when prompted:
-#   wrangler secret put SA_USERNAME     --name workdesk-worker
-#   wrangler secret put SA_SECURITY_KEY --name workdesk-worker
-#   wrangler secret put SA_PASSWORD     --name workdesk-worker
+#   wrangler secret put SA_USERNAME     --name superadminaccess
+#   wrangler secret put SA_SECURITY_KEY --name superadminaccess
+#   wrangler secret put SA_PASSWORD     --name superadminaccess
 #
-# To verify all three are set:   wrangler secret list --name workdesk-worker
+# To verify all three are set:   wrangler secret list --name superadminaccess
 # To re-add a deleted secret:    re-run the matching command above
 # Full guide: workers/DEPLOY.md
