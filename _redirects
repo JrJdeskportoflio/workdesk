@@ -20,3 +20,11 @@
 /knowledge.html          /pages/knowledge.html          301
 /integrations.html       /pages/integrations.html       301
 /settings.html           /pages/settings.html           301
+
+# ── Super Admin redirects ─────────────────────────────────────
+# SA pages moved from /super-admin/ into /pages/ to share the same
+# Cloudflare Pages project and its /api/sa-auth function.
+/super-admin/sa-portal.html    /pages/sa-login.html      301
+/super-admin/sa-dashboard.html /pages/sa-dashboard.html  301
+/super-admin/                  /pages/sa-login.html      302
+/super-admin                   /pages/sa-login.html      302
