@@ -401,6 +401,56 @@
       .float-card-cal { display: none; }
     }
 
+    /* ── Demo credentials hint ─────── */
+    .demo-hint {
+      background: #EBF4F1;
+      border: 1px solid #c3dfd8;
+      border-radius: 8px;
+      padding: 0;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #3a6b5e;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    .demo-hint summary {
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      padding: 8px 14px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .demo-hint summary::-webkit-details-marker { display: none; }
+
+    .demo-hint summary::before {
+      content: '▶';
+      font-size: 9px;
+      transition: transform 0.2s;
+    }
+
+    .demo-hint[open] summary::before { transform: rotate(90deg); }
+
+    .demo-hint .hint-body {
+      padding: 0 14px 10px;
+    }
+
+    .demo-hint code {
+      background: rgba(90,143,123,0.12);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 11.5px;
+    }
+
   </style>
 </head>
 <body>
@@ -480,6 +530,16 @@
           </div>
           <span class="field-error" id="passwordError">Required</span>
         </div>
+
+        <!-- Demo credentials hint (collapsible) -->
+        <details class="demo-hint">
+          <summary>Demo Credentials</summary>
+          <div class="hint-body">
+            Org ID: <code>DEMO</code> &nbsp;·&nbsp;
+            Employee ID: <code>EMP001</code> &nbsp;·&nbsp;
+            Password: <code>WorkDesk@2025</code>
+          </div>
+        </details>
 
         <!-- Sign In button -->
         <button type="submit" class="btn-submit" id="loginBtn">

@@ -78,13 +78,16 @@
 
 ### 3.1 Authentication (`login.html`)
 - **Purpose**: Verify employee identity and establish a session.
-- **Inputs**: Email address, password.
+- **Inputs**: Organization ID, Employee ID, password.
 - **On success**: Stores `workdesk_token` and `workdesk_display_name` in `localStorage`;
   redirects to `dashboard.html`.
-- **Production path**: Replace demo check in `functions/api/auth.js` with D1 `users` table lookup
-  and issue a signed JWT. For staging/testing access, set `DEMO_ORG_ID`, `DEMO_EMPLOYEE_ID`,
-  and `DEMO_PASSWORD` as Cloudflare Pages environment variables (never commit these values to
-  source control).
+- **Default demo credentials** (work out of the box — no env vars needed):
+  - Org ID: `DEMO` · Employee ID: `EMP001` · Password: `WorkDesk@2025`
+- **Override credentials**: Set `DEMO_ORG_ID`, `DEMO_EMPLOYEE_ID`, and `DEMO_PASSWORD`
+  as Cloudflare Pages environment variables to replace the built-in defaults (never commit
+  real credentials to source control).
+- **Production path**: Replace demo check in `functions/api/auth.js` with D1 `users` table
+  lookup and issue a signed JWT.
 
 ### 3.2 Dashboard (`dashboard.html`)
 - **Purpose**: Landing page after login. Shows KPI stat cards, attendance summary,

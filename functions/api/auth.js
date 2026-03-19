@@ -52,12 +52,21 @@ export async function onRequest(context) {
       return diff === 0;
     }
 
-    const demoOrgId      = env.DEMO_ORG_ID      || '';
-    const demoEmployeeId = env.DEMO_EMPLOYEE_ID  || '';
-    const demoPassword   = env.DEMO_PASSWORD     || '';
-    const valid = demoOrgId && demoEmployeeId && demoPassword
-      ? (await safeEqual(orgId, demoOrgId) && await safeEqual(employeeId, demoEmployeeId) && await safeEqual(password, demoPassword))
-      : false;
+    // Resolve credentials: use env vars when configured, fall back to built-in
+    // demo values so the app works out-of-the-box for evaluation/staging.
+    //
+    // ⚠️  PRODUCTION WARNING: Replace all three env vars (DEMO_ORG_ID,
+    //     DEMO_EMPLOYEE_ID, DEMO_PASSWORD) with strong, unique values in your
+    //     Cloudflare Pages project settings before handling real user data.
+    //     The built-in defaults are public knowledge and must not be used in
+    //     a live deployment with real employees or sensitive information.
+    const demoOrgId      = env.DEMO_ORG_ID      || 'DEMO';
+    const demoEmployeeId = env.DEMO_EMPLOYEE_ID  || 'EMP001';
+    const demoPassword   = env.DEMO_PASSWORD     || 'WorkDesk@2025';
+    const valid =
+      await safeEqual(orgId, demoOrgId) &&
+      await safeEqual(employeeId, demoEmployeeId) &&
+      await safeEqual(password, demoPassword);
 
     if (!valid) {
       return json({ ok: false, message: 'Invalid Organization ID, Employee ID, or password.' }, 401);

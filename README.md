@@ -64,18 +64,28 @@ WorkDesk is a fully-featured HRIS platform designed for modern organizations. It
 
 | Element | Description |
 |---|---|
-| Email & Password form | Standard credential login with validation |
+| Organization ID, Employee ID & Password form | Standard credential login with validation |
 | Password visibility toggle | Eye-icon button to show/hide password |
-| Forgot Password | Sends a reset link to the entered email |
+| Forgot Password | Sends a reset request for the entered Employee ID |
 | Google SSO | Sign in via Google (configured via Cloudflare Access) |
 | Microsoft SSO | Sign in via Microsoft (configured via Cloudflare Access) |
 | Contact HR link | Opens HR contact for login issues |
 
+**Demo credentials** (built-in defaults — work without any env var configuration):
+
+| Field | Value |
+|---|---|
+| Organization ID | `DEMO` |
+| Employee ID | `EMP001` |
+| Password | `WorkDesk@2025` |
+
+Override these by setting `DEMO_ORG_ID`, `DEMO_EMPLOYEE_ID`, and `DEMO_PASSWORD` as Cloudflare Pages environment variables. Never commit real credentials to source control.
+
 **Flow:**
-1. User enters email + password and clicks **Sign In**.
+1. User enters Organization ID, Employee ID, and password, then clicks **Sign In**.
 2. Credentials are sent to `/api/auth` (POST).
 3. On success, the session token is stored in `localStorage` and the user is redirected to `dashboard.html`.
-4. On network error (static preview), navigation falls back directly to `dashboard.html`.
+4. On failure, a toast message describes the error.
 
 ---
 
