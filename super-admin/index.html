@@ -658,6 +658,14 @@
           }));
           window.location.href = 'sa-dashboard.html';
         } else {
+          // 503 means SA secrets are not configured in Cloudflare environment
+          if (result.status === 503) {
+            showToast('Super admin access is not configured. Re-add SA_USERNAME, SA_SECURITY_KEY and SA_PASSWORD in Cloudflare → Settings → Environment variables, then redeploy.', true, 10000);
+            if (btnLabel) btnLabel.textContent = 'Sign In';
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            return;
+          }
           failCount++;
           if (failCount >= 5) {
             lockedUntil = Date.now() + 60000;
