@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <title>myWORKDESK | Admin Portal</title>
+  <title>myWORKDESK | Super Admin Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -209,14 +209,24 @@
 
     .btn-submit.loading .h-spinner { display: block; }
 
-    /* ── Bottom note ─────── */
-    .bottom-note {
+    /* ── Bottom links row ─────── */
+    .bottom-links {
       margin-top: auto;
-      font-size: 11.5px;
-      color: #D1D5DB;
-      text-align: center;
-      line-height: 1.5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: #9CA3AF;
     }
+
+    .bottom-links a {
+      color: var(--primary-dark);
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+
+    .bottom-links a:hover { text-decoration: underline; }
 
     /* ======= RIGHT: IMAGE PANEL ======= */
     .image-panel {
@@ -344,6 +354,56 @@
       .float-card-cal { display: none; }
     }
 
+    /* ── Credentials hint ─────── */
+    .demo-hint {
+      background: #EBF4F1;
+      border: 1px solid #c3dfd8;
+      border-radius: 8px;
+      padding: 0;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #3a6b5e;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    .demo-hint summary {
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      padding: 8px 14px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .demo-hint summary::-webkit-details-marker { display: none; }
+
+    .demo-hint summary::before {
+      content: '▶';
+      font-size: 9px;
+      transition: transform 0.2s;
+    }
+
+    .demo-hint[open] summary::before { transform: rotate(90deg); }
+
+    .demo-hint .hint-body {
+      padding: 0 14px 10px;
+    }
+
+    .demo-hint code {
+      background: rgba(90,143,123,0.12);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 11.5px;
+    }
+
   </style>
 </head>
 <body>
@@ -355,14 +415,14 @@
     <div class="form-panel">
 
       <!-- Logo pill -->
-      <a class="logo-pill" href="/admin/" aria-label="myWORKDESK Admin Portal">
+      <a class="logo-pill" href="/admin/" aria-label="myWORKDESK Super Admin Portal">
         <img src="/assets/workdesk-logo.svg" alt="myWORKDESK" />
         <span>myWORKDESK</span>
       </a>
 
       <!-- Heading -->
-      <h1 class="form-heading">Admin Sign In</h1>
-      <p class="form-sub">Authorized personnel only. All access attempts are logged.</p>
+      <h1 class="form-heading">Super Admin Sign In</h1>
+      <p class="form-sub">Authorized super administrators only. All access is monitored and logged.</p>
 
       <!-- Form -->
       <form id="saLoginForm" novalidate>
@@ -407,7 +467,7 @@
           <span class="field-error" id="saPasswordError">Required</span>
         </div>
 
-        <!-- Secret Key -->
+        <!-- Security Key -->
         <div class="field-group">
           <label class="field-label" for="saSecretKey">Security Key</label>
           <div class="field-input-wrap">
@@ -430,6 +490,17 @@
           <span class="field-error" id="saSecretKeyError">Required</span>
         </div>
 
+        <!-- Super admin credentials hint (collapsible) -->
+        <details class="demo-hint">
+          <summary>Super Admin Credentials</summary>
+          <div class="hint-body">
+            Cloudflare env vars:
+            <code>SA_USERNAME</code> &nbsp;&middot;&nbsp;
+            <code>SA_PASSWORD</code> &nbsp;&middot;&nbsp;
+            <code>SA_SECURITY_KEY</code>
+          </div>
+        </details>
+
         <!-- Sign In button -->
         <button type="submit" class="btn-submit" id="loginBtn">
           <span class="btn-label">Sign In</span>
@@ -438,8 +509,11 @@
 
       </form>
 
-      <!-- Bottom note -->
-      <div class="bottom-note">This portal is not linked from any public page.<br>Unauthorized access attempts will be reported.</div>
+      <!-- Bottom links -->
+      <div class="bottom-links">
+        <span>Not a super admin? <a href="/app/login.html">Employee login</a></span>
+        <span>All access is logged.</span>
+      </div>
 
     </div>
 
