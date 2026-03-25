@@ -38,9 +38,12 @@
       width: 940px;
       max-width: 100%;
       min-height: 600px;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.22);
       border-radius: 24px;
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       display: flex;
       overflow: hidden;
     }
@@ -51,7 +54,7 @@
       display: flex;
       flex-direction: column;
       padding: 44px 48px 36px;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.68);
     }
 
     /* ── Logo pill ─────── */
@@ -413,54 +416,40 @@
       .float-card-cal { display: none; }
     }
 
-    /* ── Demo credentials hint ─────── */
-    .demo-hint {
-      background: #EBF4F1;
-      border: 1px solid #c3dfd8;
+    /* ── Daily quote card ─────── */
+    .daily-quote {
+      background: rgba(235, 244, 241, 0.92);
+      border: 1px solid rgba(90, 143, 123, 0.25);
       border-radius: 8px;
-      padding: 0;
+      padding: 10px 14px;
       margin-bottom: 20px;
       font-size: 12px;
       color: #3a6b5e;
       line-height: 1.6;
-      overflow: hidden;
     }
 
-    .demo-hint summary {
-      cursor: pointer;
-      font-size: 11px;
+    .daily-quote .quote-label {
+      display: block;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--primary);
-      padding: 8px 14px;
-      list-style: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      user-select: none;
+      margin-bottom: 4px;
     }
 
-    .demo-hint summary::-webkit-details-marker { display: none; }
-
-    .demo-hint summary::before {
-      content: '▶';
-      font-size: 9px;
-      transition: transform 0.2s;
+    .daily-quote blockquote {
+      margin: 0;
+      font-size: 12.5px;
+      color: #2f5f53;
     }
 
-    .demo-hint[open] summary::before { transform: rotate(90deg); }
-
-    .demo-hint .hint-body {
-      padding: 0 14px 10px;
-    }
-
-    .demo-hint code {
-      background: rgba(90,143,123,0.12);
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-family: 'SFMono-Regular', Consolas, monospace;
-      font-size: 11.5px;
+    .daily-quote cite {
+      display: block;
+      margin-top: 4px;
+      font-style: normal;
+      font-size: 11px;
+      color: #3a6b5e;
     }
 
   </style>
@@ -583,21 +572,13 @@
           <span class="field-error" id="passwordError">Required</span>
         </div>
 
-        <!-- Demo credentials hint (collapsible) -->
-        <details class="demo-hint" id="employeeDemoHint">
-          <summary>Demo Credentials</summary>
-          <div class="hint-body">
-            Org ID: <code>DEMO</code> &nbsp;·&nbsp;
-            Employee ID: <code>EMP001</code> &nbsp;·&nbsp;
-            Password: <code>Set via DEMO_PASSWORD env var</code>
-          </div>
-        </details>
-        <details class="demo-hint" id="saHint" hidden>
-          <summary>Super Admin Credentials</summary>
-          <div class="hint-body">
-            Configure in Cloudflare env vars: <code>SA_USERNAME</code>, <code>SA_EMPLOYEE_ID</code> (optional), <code>SA_SECURITY_KEY</code> (passkey)
-          </div>
-        </details>
+        <section class="daily-quote" aria-live="polite">
+          <span class="quote-label">Daily Quote</span>
+          <blockquote>
+            <span id="dailyQuoteText"></span>
+            <cite id="dailyQuoteAuthor"></cite>
+          </blockquote>
+        </section>
 
         <!-- Sign In button -->
         <button type="submit" class="btn-submit" id="loginBtn">
@@ -692,6 +673,50 @@
       }
     }());
 
+    // ── Daily quote (30 quotes rotating each day) ─────────────────────────────
+    (function () {
+      var quotes = [
+        { text: 'Success is the sum of small efforts, repeated day in and day out.', author: 'Robert Collier' },
+        { text: 'The future depends on what you do today.', author: 'Mahatma Gandhi' },
+        { text: 'Quality means doing it right when no one is looking.', author: 'Henry Ford' },
+        { text: 'Discipline is choosing between what you want now and what you want most.', author: 'Abraham Lincoln' },
+        { text: 'Well done is better than well said.', author: 'Benjamin Franklin' },
+        { text: 'Do not wait. The time will never be just right.', author: 'Napoleon Hill' },
+        { text: 'Great things are done by a series of small things brought together.', author: 'Vincent van Gogh' },
+        { text: 'Action is the foundational key to all success.', author: 'Pablo Picasso' },
+        { text: 'Either you run the day, or the day runs you.', author: 'Jim Rohn' },
+        { text: 'Small daily improvements are the key to staggering long-term results.', author: 'Robin Sharma' },
+        { text: 'Dream big. Start small. Act now.', author: 'Robin Sharma' },
+        { text: 'Perseverance is not a long race; it is many short races one after the other.', author: 'Walter Elliot' },
+        { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
+        { text: 'The best way out is always through.', author: 'Robert Frost' },
+        { text: 'What we do repeatedly becomes our excellence.', author: 'Will Durant' },
+        { text: 'Simplicity is the ultimate sophistication.', author: 'Leonardo da Vinci' },
+        { text: 'Focus on being productive instead of busy.', author: 'Tim Ferriss' },
+        { text: 'You do not have to be great to start, but you have to start to be great.', author: 'Zig Ziglar' },
+        { text: 'Start where you are. Use what you have. Do what you can.', author: 'Arthur Ashe' },
+        { text: 'If you can dream it, you can do it.', author: 'Walt Disney' },
+        { text: 'Progress is impossible without change.', author: 'George Bernard Shaw' },
+        { text: 'Do one thing every day that moves you forward.', author: 'Unknown' },
+        { text: 'Your habits shape your future.', author: 'Jack Canfield' },
+        { text: 'Make each day your masterpiece.', author: 'John Wooden' },
+        { text: 'Courage is resistance to fear, mastery of fear, not absence of fear.', author: 'Mark Twain' },
+        { text: 'Success usually comes to those who are too busy to be looking for it.', author: 'Henry David Thoreau' },
+        { text: 'Do the hard jobs first. The easy jobs will take care of themselves.', author: 'Dale Carnegie' },
+        { text: 'Where focus goes, energy flows.', author: 'Tony Robbins' },
+        { text: 'The way to get started is to quit talking and begin doing.', author: 'Walt Disney' },
+        { text: 'Do not watch the clock; do what it does. Keep going.', author: 'Sam Levenson' }
+      ];
+      var quoteTextEl = document.getElementById('dailyQuoteText');
+      var quoteAuthorEl = document.getElementById('dailyQuoteAuthor');
+      if (!quoteTextEl || !quoteAuthorEl || !quotes.length) return;
+
+      var dayNumber = Math.floor(Date.now() / 86400000);
+      var quote = quotes[((dayNumber % quotes.length) + quotes.length) % quotes.length];
+      quoteTextEl.textContent = '"' + quote.text + '"';
+      quoteAuthorEl.textContent = '— ' + quote.author;
+    }());
+
     // ── Toast helper ─────────────────────────────────────────────────────────
     function showToast(msg, isError, duration) {
       var toast = document.getElementById('loginToast');
@@ -747,8 +772,6 @@
       var regularFields = document.querySelectorAll('.role-regular');
       var superFields = document.querySelectorAll('.role-superadmin');
       var sub = document.querySelector('.form-sub');
-      var employeeHint = document.getElementById('employeeDemoHint');
-      var saHint = document.getElementById('saHint');
       var passwordLabel = document.querySelector('label[for="password"]');
       var saSecretKeyGroup = document.getElementById('saSecretKeyGroup');
 
@@ -760,8 +783,6 @@
           ? 'Secure CEO/Super Admin access with all permissions'
           : 'Sign in to access your workspace';
       }
-      if (employeeHint) employeeHint.hidden = role === 'super_admin';
-      if (saHint) saHint.hidden = role !== 'super_admin';
       if (passwordLabel) passwordLabel.textContent = role === 'super_admin' ? 'Passkey' : 'Password';
       // In super-admin mode, the Password field is repurposed as the passkey input.
       if (saSecretKeyGroup && role === 'super_admin') saSecretKeyGroup.hidden = true;
