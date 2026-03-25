@@ -106,7 +106,7 @@ myworkdeskapp/
 
 ### Unified Login (`/app/login.html`)
 - Roles: Super Admin (CEO), Admin, Employee
-- Super Admin Login: Username + Secret Key + Password (`/api/sa-auth`)
+- Super Admin Login: Username + Employee ID (role inference) + Passkey (`/api/sa-auth`)
 - Admin/Employee Login: Org ID + Employee ID + Password (`/api/auth`)
 - Token: `workdesk_token` in localStorage
 - API: `POST /api/auth`
@@ -117,4 +117,4 @@ myworkdeskapp/
 - Token: `sa_token` in localStorage (base64 `username:sa:timestamp:uuid`)
 - API: `POST /api/sa-auth`
 - Session guard: checks `localStorage.getItem('sa_token')`
-- Credentials set via env vars: `SA_USERNAME`, `SA_SECURITY_KEY`, `SA_PASSWORD`
+- Credentials set via env vars: `SA_USERNAME`, `SA_SECURITY_KEY` (+ optional `SA_EMPLOYEE_ID`, legacy `SA_PASSWORD`)

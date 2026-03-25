@@ -7,8 +7,9 @@
  *
  * Required environment variables (set in Cloudflare Pages project settings):
  *   SA_USERNAME     — Super admin username
+ *   SA_EMPLOYEE_ID  — Super admin employee ID (optional strict match)
  *   SA_SECURITY_KEY — Super admin security key (second factor)
- *   SA_PASSWORD     — Super admin password
+ *   SA_PASSWORD     — Super admin password (optional fallback for legacy flow)
  *
  * All access attempts are logged. This endpoint is NOT linked from any public page.
  */
@@ -58,10 +59,11 @@ export async function onRequest(context) {
       });
     }
 
-    const { username, securityKey, password } = body || {};
+    const { username, employeeId, securityKey, password } = body || {};
+    var passkey = securityKey || password || '';
 
-    if (!username || !securityKey || !password) {
-      return new Response(JSON.stringify({ ok: false, message: 'Username, security key, and password are all required.' }), {
+    if (!username || !passkey) {
+      return new Response(JSON.stringify({ ok: false, message: 'Username and passkey are required.' }), {
         status: 400, headers: corsHeaders,
       });
     }
@@ -69,22 +71,26 @@ export async function onRequest(context) {
     const saUsername    = env.SA_USERNAME     || '';
     const saSecurityKey = env.SA_SECURITY_KEY || '';
     const saPassword    = env.SA_PASSWORD     || '';
+    const saEmployeeId  = env.SA_EMPLOYEE_ID  || '';
 
     // Credentials must be configured in environment variables
-    if (!saUsername || !saSecurityKey || !saPassword) {
+    if (!saUsername || !saSecurityKey) {
       return new Response(JSON.stringify({ ok: false, message: 'Super admin access is not configured.' }), {
         status: 503, headers: corsHeaders,
       });
     }
 
-    // Verify all three factors simultaneously to prevent enumeration
-    const [usernameOk, keyOk, passwordOk] = await Promise.all([
+    // Verify username + passkey (security key) and optional employee ID binding.
+    const [usernameOk, passkeyOk, employeeIdOk] = await Promise.all([
       safeEqual(username,    saUsername),
-      safeEqual(securityKey, saSecurityKey),
-      safeEqual(password,    saPassword),
+      safeEqual(passkey, saSecurityKey),
+      !saEmployeeId || !employeeId ? true : safeEqual(employeeId, saEmployeeId),
     ]);
 
-    const valid = usernameOk && keyOk && passwordOk;
+    // Backward-compatible fallback: if legacy SA_PASSWORD is configured, still
+    // allow old clients that submit securityKey + password + username.
+    const legacyPasswordOk = saPassword && password ? await safeEqual(password, saPassword) : false;
+    const valid = usernameOk && employeeIdOk && (passkeyOk || legacyPasswordOk);
 
     if (!valid) {
       // Deliberate delay to slow brute-force attempts

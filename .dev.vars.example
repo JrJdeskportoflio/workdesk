@@ -8,6 +8,7 @@
 # Required by POST /api/sa-auth and GET /api/sa-config-check.
 # Use strong, unique values in production (set via `wrangler secret put`).
 SA_USERNAME=admin
+SA_EMPLOYEE_ID=SUPER001
 SA_SECURITY_KEY=changeme-security-key
 SA_PASSWORD=changeme-password
 

@@ -374,26 +374,35 @@
 
     /* ======= RESPONSIVE ======= */
     @media (max-width: 720px) {
-      body { padding: 0; align-items: stretch; }
+      body {
+        padding: 0;
+        align-items: stretch;
+        background:
+          linear-gradient(rgba(13, 31, 24, 0.55), rgba(13, 31, 24, 0.55)),
+          url('/assets/login-cover-happy.png') center center / cover no-repeat;
+      }
 
       .login-card {
         flex-direction: column;
         border-radius: 0;
         min-height: 100vh;
         box-shadow: none;
+        background: transparent;
       }
 
       .form-panel {
         flex: none;
         padding: 40px 28px 32px;
         order: 1;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px 16px 0 0;
+        margin-top: auto;
       }
 
       .image-panel {
-        flex: none;
-        height: 220px;
-        border-radius: 0;
-        order: 0;
+        display: none;
       }
 
       .float-card-cal { display: none; }
@@ -477,17 +486,7 @@
       <!-- Form -->
       <form id="loginForm" novalidate>
 
-        <!-- Access role -->
-        <div class="field-group">
-          <label class="field-label" for="loginRole">Access Role</label>
-          <div class="field-input-wrap">
-            <select id="loginRole" name="loginRole" class="field-input" required>
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
-              <option value="super_admin">Super Admin (CEO)</option>
-            </select>
-          </div>
-        </div>
+        <input type="hidden" id="loginRole" name="loginRole" value="employee" />
 
         <!-- Organization ID -->
         <div class="field-group role-regular">
@@ -507,7 +506,7 @@
         </div>
 
         <!-- Employee ID -->
-        <div class="field-group role-regular">
+        <div class="field-group" id="employeeIdGroup">
           <label class="field-label" for="employeeId">Employee ID</label>
           <div class="field-input-wrap">
             <input
@@ -596,7 +595,7 @@
         <details class="demo-hint" id="saHint" hidden>
           <summary>Super Admin Credentials</summary>
           <div class="hint-body">
-            Configure in Cloudflare env vars: <code>SA_USERNAME</code>, <code>SA_SECURITY_KEY</code>, <code>SA_PASSWORD</code>
+            Configure in Cloudflare env vars: <code>SA_USERNAME</code>, <code>SA_EMPLOYEE_ID</code> (optional), <code>SA_SECURITY_KEY</code> (passkey)
           </div>
         </details>
 
@@ -725,6 +724,22 @@
       setFieldError('saSecretKey', 'saSecretKeyError', null);
     }
 
+    function inferRoleFromEmployeeId(employeeId) {
+      var id = (employeeId || '').trim().toUpperCase();
+      if (!id) return 'employee';
+      if (id.indexOf('SUPER') !== -1 || id.indexOf('CEO') !== -1 || id.indexOf('SA') === 0) return 'super_admin';
+      if (id.indexOf('ADMIN') !== -1 || id.indexOf('ADM') === 0) return 'admin';
+      return 'employee';
+    }
+
+    function syncRoleFromEmployeeId() {
+      var employeeIdInput = document.getElementById('employeeId');
+      var roleInput = document.getElementById('loginRole');
+      if (!employeeIdInput || !roleInput) return;
+      roleInput.value = inferRoleFromEmployeeId(employeeIdInput.value);
+      setRoleMode();
+    }
+
     function setRoleMode() {
       var role = (document.getElementById('loginRole') || {}).value || 'employee';
       var regularFields = document.querySelectorAll('.role-regular');
@@ -732,6 +747,8 @@
       var sub = document.querySelector('.form-sub');
       var employeeHint = document.getElementById('employeeDemoHint');
       var saHint = document.getElementById('saHint');
+      var passwordLabel = document.querySelector('label[for="password"]');
+      var saSecretKeyGroup = document.getElementById('saSecretKeyGroup');
 
       regularFields.forEach(function (el) { el.hidden = role === 'super_admin'; });
       superFields.forEach(function (el) { el.hidden = role !== 'super_admin'; });
@@ -743,6 +760,8 @@
       }
       if (employeeHint) employeeHint.hidden = role === 'super_admin';
       if (saHint) saHint.hidden = role !== 'super_admin';
+      if (passwordLabel) passwordLabel.textContent = role === 'super_admin' ? 'Passkey' : 'Password';
+      if (saSecretKeyGroup && role === 'super_admin') saSecretKeyGroup.hidden = true;
     }
 
     document.getElementById('orgId').addEventListener('input', function () {
@@ -750,6 +769,7 @@
     });
     document.getElementById('employeeId').addEventListener('input', function () {
       setFieldError('employeeId', 'employeeIdError', null);
+      syncRoleFromEmployeeId();
     });
     document.getElementById('password').addEventListener('input', function () {
       setFieldError('password', 'passwordError', null);
@@ -760,7 +780,7 @@
     document.getElementById('saSecretKey').addEventListener('input', function () {
       setFieldError('saSecretKey', 'saSecretKeyError', null);
     });
-    document.getElementById('loginRole').addEventListener('change', setRoleMode);
+    syncRoleFromEmployeeId();
     setRoleMode();
 
     // ── Password visibility toggle ────────────────────────────────────────────
@@ -837,7 +857,7 @@
 
       if (role === 'super_admin') {
         if (!saUsername)  { setFieldError('saUsername', 'saUsernameError', 'Required'); valid = false; }
-        if (!saSecretKey) { setFieldError('saSecretKey', 'saSecretKeyError', 'Required'); valid = false; }
+        if (!employeeId) { setFieldError('employeeId', 'employeeIdError', 'Required'); valid = false; }
       } else {
         if (!orgId)      { setFieldError('orgId',      'orgIdError',      'Required'); valid = false; }
         if (!employeeId) { setFieldError('employeeId', 'employeeIdError', 'Required'); valid = false; }
@@ -857,10 +877,11 @@
       };
 
       if (role === 'super_admin') {
+        saSecretKey = password;
         fetch('/api/sa-auth', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ username: saUsername, password: password, securityKey: saSecretKey })
+          body:    JSON.stringify({ username: saUsername, employeeId: employeeId, securityKey: saSecretKey })
         })
         .then(function (res) { return res.json().then(function (d) { return { status: res.status, data: d }; }); })
         .then(function (result) {
@@ -879,7 +900,7 @@
               issuedAt:    Date.now()
             }));
             localStorage.setItem('workdesk_display_name', result.data.username || saTitle);
-            window.location.replace('/pages/sa-dashboard.html');
+            window.location.replace('/pages/sa-dashboard.html#security');
             return;
           }
           showToast(result.data && result.data.message ? result.data.message : 'Invalid credentials. Access denied.', true);

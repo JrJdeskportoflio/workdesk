@@ -2088,6 +2088,9 @@ wrangler secret put SA_PASSWORD     --name myworkdeskapp</pre>
       el.classList.toggle('active', el.id === 'panel-' + panelId);
     });
     document.getElementById('topbarTitle').textContent = PANEL_TITLES[panelId] || 'Super Admin Console';
+    if (panelId && window.location.hash !== '#' + panelId) {
+      window.location.hash = panelId;
+    }
   }
 
   document.querySelectorAll('.nav-item[data-panel]').forEach(function (el) {
@@ -2096,6 +2099,13 @@ wrangler secret put SA_PASSWORD     --name myworkdeskapp</pre>
       navigateTo(el.dataset.panel);
     });
   });
+
+  (function initPanelFromHash() {
+    var panelId = (window.location.hash || '').replace('#', '');
+    if (panelId && PANEL_TITLES[panelId]) {
+      navigateTo(panelId);
+    }
+  })();
 
   // ── Toast ────────────────────────────────────────────────────────────────
   function showToast(msg, type, duration) {
