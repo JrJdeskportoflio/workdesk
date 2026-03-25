@@ -11,6 +11,14 @@
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
   Cache-Control: no-store, no-cache, must-revalidate
 
+/pages/sa-login.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/pages/sa-dashboard.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
 /admin/*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
   Cache-Control: no-store, no-cache, must-revalidate

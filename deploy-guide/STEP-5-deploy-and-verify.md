@@ -58,15 +58,15 @@ Open each URL below and verify it loads correctly:
 ### Admin / Super-Admin Portal
 | Page              | URL                                                     |
 |-------------------|---------------------------------------------------------|
-| Admin Login       | `https://myworkdeskapp.pages.dev/admin/login.html`      |
-| Admin Dashboard   | `https://myworkdeskapp.pages.dev/admin/dashboard.html`  |
+| Admin Login       | `https://myworkdeskapp.pages.dev/pages/sa-login.html`   |
+| Admin Dashboard   | `https://myworkdeskapp.pages.dev/pages/sa-dashboard.html`|
 
 ### Root & Redirect Checks
 | Check                         | Expected behavior                                   |
 |-------------------------------|-----------------------------------------------------|
 | `https://myworkdeskapp.pages.dev/` | Serves `index.html` (root landing page)        |
 | `https://myworkdeskapp.pages.dev/login.html` | Redirects → `/app/login.html`     |
-| `https://myworkdeskapp.pages.dev/admin` | Redirects → `/admin/login.html`        |
+| `https://myworkdeskapp.pages.dev/admin` | Redirects → `/pages/sa-login.html`      |
 
 ---
 
@@ -77,7 +77,7 @@ Open each URL below and verify it loads correctly:
 - Employee ID: `EMP001`
 - Password: whatever you set in `DEMO_PASSWORD` env var
 
-**Admin login** (`/admin/login.html`):
+**Admin login** (`/pages/sa-login.html`):
 - Username: value of `SA_USERNAME`
 - Secret Key: value of `SA_SECURITY_KEY`
 - Password: value of `SA_PASSWORD`

@@ -4,10 +4,8 @@
 
 ```
 myworkdeskapp/
-├── admin/              Super Admin portal (login + dashboard)
-│   ├── index.html      Entry point — redirects to admin/login.html
-│   ├── login.html      SA login (username + secret key + password)
-│   ├── dashboard.html  SA dashboard & management panel
+├── admin/              Super Admin portal (entry point + headers)
+│   ├── index.html      Entry point — redirects to pages/sa-login.html
 │   └── _headers        SA-specific security headers (noindex, no-cache)
 │
 ├── app/                Regular user portal
@@ -30,6 +28,12 @@ myworkdeskapp/
 │   ├── knowledge.html  Knowledge base
 │   ├── integrations.html  Third-party integrations
 │   └── settings.html   Settings & configuration
+│
+├── pages/              All pages (regular + SA) — canonical location
+│   ├── login.html      Regular user login (redirects to /app/login.html)
+│   ├── sa-login.html   SA login (username + secret key + password)
+│   ├── sa-dashboard.html SA dashboard & management panel
+│   └── ...             Other pages (redirect to /app/ equivalents)
 │
 ├── workers/            Backend / Cloudflare Workers
 │   ├── api-worker.js   Main API worker
@@ -91,9 +95,11 @@ myworkdeskapp/
 | `/` | → `/app/login.html` |
 | `/app/login.html` | Regular user login |
 | `/app/dashboard.html` | App dashboard (auth required) |
-| `/admin/` | → `/admin/login.html` |
-| `/admin/login.html` | Super Admin login |
-| `/admin/dashboard.html` | SA dashboard (SA token required) |
+| `/pages/sa-login.html` | Super Admin login |
+| `/pages/sa-dashboard.html` | SA dashboard (SA token required) |
+| `/admin/` | → `/pages/sa-login.html` |
+| `/admin/login.html` | → `/pages/sa-login.html` |
+| `/admin/dashboard.html` | → `/pages/sa-dashboard.html` |
 | `/api/auth` | Regular auth endpoint |
 | `/api/sa-auth` | SA auth endpoint |
 
@@ -105,7 +111,7 @@ myworkdeskapp/
 - API: `POST /api/auth`
 - Session guard: checks `localStorage.getItem('workdesk_token')`
 
-### Super Admin (`/admin/`)
+### Super Admin (`/pages/sa-login.html`)
 - Login: Username + Secret Key + Password
 - Token: `sa_token` in localStorage (base64 `username:sa:timestamp:uuid`)
 - API: `POST /api/sa-auth`

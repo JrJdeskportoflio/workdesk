@@ -1,12 +1,14 @@
-# ── Admin (SA) portal ─────────────────────────────────────────
-/admin                         /admin/login.html              302
-/admin/                        /admin/login.html              302
+# ── Super Admin portal → canonical in pages/ ──────────────────
+/admin                         /pages/sa-login.html           302
+/admin/                        /pages/sa-login.html           302
+/admin/login.html              /pages/sa-login.html           301
+/admin/dashboard.html          /pages/sa-dashboard.html       301
 
 # ── Legacy super-admin redirects ──────────────────────────────
-/super-admin/sa-portal.html    /admin/login.html              301
-/super-admin/sa-dashboard.html /admin/dashboard.html          301
-/super-admin/                  /admin/login.html              302
-/super-admin                   /admin/login.html              302
+/super-admin/sa-portal.html    /pages/sa-login.html           301
+/super-admin/sa-dashboard.html /pages/sa-dashboard.html       301
+/super-admin/                  /pages/sa-login.html           302
+/super-admin                   /pages/sa-login.html           302
 
 # ── Legacy /pages/ redirects (backward compatibility) ─────────
 /pages/login.html              /app/login.html                301
@@ -28,8 +30,6 @@
 /pages/knowledge.html          /app/knowledge.html            301
 /pages/integrations.html       /app/integrations.html         301
 /pages/settings.html           /app/settings.html             301
-/pages/sa-login.html           /admin/login.html              301
-/pages/sa-dashboard.html       /admin/dashboard.html          301
 
 # ── Root redirect ──────────────────────────────────────────────
 /login.html                    /app/login.html                301
