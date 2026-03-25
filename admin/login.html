@@ -355,7 +355,7 @@
     <div class="form-panel">
 
       <!-- Logo pill -->
-      <a class="logo-pill" href="/" aria-label="myWORKDESK home">
+      <a class="logo-pill" href="/admin/" aria-label="myWORKDESK Admin Portal">
         <img src="/assets/workdesk-logo.svg" alt="myWORKDESK" />
         <span>myWORKDESK</span>
       </a>
@@ -459,6 +459,15 @@
   <div class="login-toast" id="loginToast" role="alert" aria-live="assertive"></div>
 
   <script>
+    // ── Session guard: already logged in → go to admin dashboard ─────────────
+    (function () {
+      try {
+        if (localStorage.getItem('sa_token')) {
+          window.location.replace('/admin/dashboard.html');
+        }
+      } catch (_) {}
+    }());
+
     // ── Build 7-day calendar strip centred on today ───────────────────────────
     (function () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

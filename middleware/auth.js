@@ -12,7 +12,7 @@ function logout() {
             localStorage.removeItem('workdesk_token');
             localStorage.removeItem('workdesk_display_name');
             localStorage.removeItem('session');
-            window.location.href = 'login.html';
+            window.location.replace('/app/login.html');
         }
     });
 }

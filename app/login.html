@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <title>myWORKDESK | Secure Enterprise Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -369,6 +370,8 @@
       opacity: 1;
     }
 
+    .login-toast.error { background: #c0392b; }
+
     /* ======= RESPONSIVE ======= */
     @media (max-width: 720px) {
       body { padding: 0; align-items: stretch; }
@@ -598,6 +601,15 @@
   <div class="login-toast" id="loginToast" role="status" aria-live="polite"></div>
 
   <script>
+    // ── Session guard: already logged in → go to dashboard ───────────────────
+    (function () {
+      try {
+        if (localStorage.getItem('workdesk_token')) {
+          window.location.replace('/app/dashboard.html');
+        }
+      } catch (_) {}
+    }());
+
     // ── Build 7-day calendar strip centred on today ───────────────────────────
     (function () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -618,9 +630,10 @@
     }());
 
     // ── Toast helper ─────────────────────────────────────────────────────────
-    function showToast(msg, duration) {
+    function showToast(msg, isError, duration) {
       var toast = document.getElementById('loginToast');
       toast.textContent = msg;
+      toast.classList.toggle('error', !!isError);
       toast.classList.add('show');
       setTimeout(function () { toast.classList.remove('show'); }, duration || 3000);
     }
@@ -677,21 +690,21 @@
         setFieldError('employeeId', 'employeeIdError', 'Enter Employee ID first.');
         return;
       }
-      showToast('Password reset request submitted for Employee ID: ' + empId + '. Contact your HR Team.');
+      showToast('Password reset request submitted for Employee ID: ' + empId + '. Contact your HR Team.', false);
     });
 
     // ── Social SSO buttons ────────────────────────────────────────────────────
     document.getElementById('googleBtn').addEventListener('click', function () {
-      showToast('Google SSO is configured via your Cloudflare Access policy.');
+      showToast('Google SSO is configured via your Cloudflare Access policy.', false);
     });
     document.getElementById('msBtn').addEventListener('click', function () {
-      showToast('Microsoft SSO is configured via your Cloudflare Access policy.');
+      showToast('Microsoft SSO is configured via your Cloudflare Access policy.', false);
     });
 
     // ── Terms & Conditions link ───────────────────────────────────────────────
     document.getElementById('termsLink').addEventListener('click', function (e) {
       e.preventDefault();
-      showToast('Organization registration is coming soon. Contact the WorkDesk team to get started.');
+      showToast('Organization registration is coming soon. Contact the WorkDesk team to get started.', false);
     });
 
     // ── Login form submit ─────────────────────────────────────────────────────
@@ -731,16 +744,16 @@
       .then(function (data) {
         if (data && data.ok) {
           if (data.token) localStorage.setItem('workdesk_token', data.token);
-          window.location.href = 'dashboard.html';
+          window.location.replace('/app/dashboard.html');
         } else {
-          showToast(data && data.message ? data.message : 'Invalid credentials. Please try again.');
+          showToast(data && data.message ? data.message : 'Invalid credentials. Please try again.', true);
           if (btnLabel) btnLabel.textContent = 'Sign In';
           btn.classList.remove('loading');
           btn.disabled = false;
         }
       })
       .catch(function () {
-        showToast('Login failed. Please check your connection and try again.');
+        showToast('Login failed. Please check your connection and try again.', true);
         if (btnLabel) btnLabel.textContent = 'Sign In';
         btn.classList.remove('loading');
         btn.disabled = false;
