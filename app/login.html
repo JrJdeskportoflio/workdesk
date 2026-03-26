@@ -477,7 +477,7 @@
         <input type="hidden" id="loginRole" name="loginRole" value="employee" />
 
         <!-- Organization ID -->
-        <div class="field-group">
+        <div class="field-group role-regular" id="orgIdGroup">
           <label class="field-label" for="orgId">Organization ID</label>
           <div class="field-input-wrap">
             <input
@@ -771,7 +771,6 @@
       var regularFields = document.querySelectorAll('.role-regular');
       var superFields = document.querySelectorAll('.role-superadmin');
       var sub = document.querySelector('.form-sub');
-      var saSecretKeyGroup = document.getElementById('saSecretKeyGroup');
 
       regularFields.forEach(function (el) { el.hidden = role === 'super_admin'; });
       superFields.forEach(function (el) { el.hidden = role !== 'super_admin'; });
@@ -781,8 +780,6 @@
           ? 'Secure CEO/Super Admin access with all permissions'
           : 'Sign in to access your workspace';
       }
-      // In super-admin mode, hide the separate Security Key field (orgId is used instead).
-      if (saSecretKeyGroup && role === 'super_admin') saSecretKeyGroup.hidden = true;
     }
 
     document.getElementById('orgId').addEventListener('input', function () {
@@ -877,7 +874,7 @@
       var valid      = true;
 
       if (role === 'super_admin') {
-        if (!orgId)      { setFieldError('orgId',      'orgIdError',      'Required'); valid = false; }
+        if (!saSecretKey) { setFieldError('saSecretKey', 'saSecretKeyError', 'Required'); valid = false; }
         if (!saUsername)  { setFieldError('saUsername', 'saUsernameError', 'Required'); valid = false; }
       } else {
         if (!orgId)      { setFieldError('orgId',      'orgIdError',      'Required'); valid = false; }
@@ -901,7 +898,7 @@
         fetch('/api/sa-auth', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ username: saUsername, orgId: orgId, password: password })
+          body:    JSON.stringify({ username: saUsername, orgId: saSecretKey, password: password })
         })
         .then(function (res) { return res.json().then(function (d) { return { status: res.status, data: d }; }); })
         .then(function (result) {
