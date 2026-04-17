@@ -607,7 +607,7 @@
           if (data.token) localStorage.setItem('workdesk_token', data.token);
           window.location.href = 'dashboard.html';
         } else {
-          showToast(data && data.message ? data.message : 'Invalid credentials. Please try again.');
+          showToast(data && data.message ? data.message : 'Invalid credentials. Please check demo accounts or override credentials.');
           if (btnLabel) btnLabel.textContent = 'Sign In';
           btn.classList.remove('loading');
           btn.disabled = false;

@@ -60,21 +60,32 @@ export async function onRequest(context) {
     // Pages / Workers settings to use your own values.
     const demoOrgId      = (env.DEMO_ORG_ID      || 'DEMO').trim();
     const demoEmployeeId = (env.DEMO_EMPLOYEE_ID  || 'EMP001').trim();
-    const demoPassword   = (env.DEMO_PASSWORD     || 'WorkDesk@2025').trim();
+    const hasDemoPasswordOverride = typeof env.DEMO_PASSWORD === 'string' && env.DEMO_PASSWORD.trim().length > 0;
+    const demoPasswords = hasDemoPasswordOverride
+      ? [env.DEMO_PASSWORD.trim()]
+      : ['WorkDesk@2025', 'demo123', 'demo1234'];
 
     // Admin credentials (optional). If the ADMIN_* env vars are set they take
     // precedence for the 'admin' role; otherwise the admin and employee share
     // the same org-ID and password but admin skips the per-employee-ID check
     // so that any ADMIN-/ADM-prefixed employee ID is accepted.
     const adminOrgId      = (env.ADMIN_ORG_ID      || demoOrgId).trim();
-    const adminPassword   = (env.ADMIN_PASSWORD     || demoPassword).trim();
+    const hasAdminPasswordOverride = typeof env.ADMIN_PASSWORD === 'string' && env.ADMIN_PASSWORD.trim().length > 0;
+    const adminPasswords  = hasAdminPasswordOverride
+      ? [env.ADMIN_PASSWORD.trim()]
+      : demoPasswords;
     const adminEmployeeId = (env.ADMIN_EMPLOYEE_ID  || '').trim();
+
+    async function safeEqualAny(input, candidates) {
+      const checks = await Promise.all(candidates.map((value) => safeEqual(input, value)));
+      return checks.some(Boolean);
+    }
 
     let valid = false;
     if (role === 'admin') {
       const [orgOk, passOk] = await Promise.all([
         safeEqual(orgId, adminOrgId),
-        safeEqual(password, adminPassword),
+        safeEqualAny(password, adminPasswords),
       ]);
       // Employee-ID check is optional: only enforce if ADMIN_EMPLOYEE_ID is set
       const empOk = adminEmployeeId ? await safeEqual(employeeId, adminEmployeeId) : true;
@@ -83,13 +94,16 @@ export async function onRequest(context) {
       const [orgOk, empOk, passOk] = await Promise.all([
         safeEqual(orgId, demoOrgId),
         safeEqual(employeeId, demoEmployeeId),
-        safeEqual(password, demoPassword),
+        safeEqualAny(password, demoPasswords),
       ]);
       valid = orgOk && empOk && passOk;
     }
 
     if (!valid) {
-      return json({ ok: false, message: 'Invalid Organization ID, Employee ID, or password.' }, 401);
+      const hint = hasDemoPasswordOverride
+        ? 'Invalid Organization ID, Employee ID, or password.'
+        : 'Invalid Organization ID, Employee ID, or password. Check demo account defaults or override DEMO_* credentials.';
+      return json({ ok: false, message: hint }, 401);
     }
 
     // Issue a simple demo token (replace with signed JWT in production)
